@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PORTFOLIO — Game Developer</title>
+<meta name="description" content="Interactive game-developer portfolio. Explore the hub, or switch to Recruiter Mode for a plain resume.">
+<meta name="theme-color" content="#0a0612">
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Game Developer Portfolio">
+<meta property="og:description" content="A portfolio you play. Walk the hub, open the arcade, read the resume.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-booting">
+
+<!-- ══════════════════════════════ BOOT ══════════════════════════════ -->
+<div id="boot" class="boot">
+  <div class="boot__inner">
+    <pre class="boot__logo" aria-hidden="true"></pre>
+    <div class="boot__log" id="bootLog" role="status" aria-live="polite"></div>
+    <div class="boot__bar"><i id="bootBar"></i></div>
+    <button id="bootStart" class="btn btn--primary boot__start" hidden>PRESS START</button>
+    <button id="bootSkip" class="boot__skip">Skip &rsaquo; Recruiter Mode</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ GAME ══════════════════════════════ -->
+<main id="game" class="game" hidden>
+  <canvas id="stage" aria-label="Game world. Use Recruiter Mode for a text version of all content."></canvas>
+
+  <!-- CRT / scanline overlay -->
+  <div class="crt" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- Top bar -->
+  <header class="hud hud--top">
+    <div class="hud__id">
+      <span class="hud__name" id="hudName">—</span>
+      <span class="hud__role" id="hudRole">—</span>
+    </div>
+    <nav class="hud__actions">
+      <button class="btn btn--ghost" id="btnMap" title="Map (M)">MAP</button>
+      <button class="btn btn--ghost" id="btnAudio" title="Sound (P)" aria-pressed="false">♪ OFF</button>
+      <button class="btn btn--primary" id="btnRecruiter">RECRUITER MODE</button>
+    </nav>
+  </header>
+
+  <!-- Objective / zone banner -->
+  <div class="hud hud--zone" id="zoneBanner" aria-live="polite"></div>
+
+  <!-- Interaction prompt -->
+  <div class="prompt" id="prompt" hidden>
+    <kbd>E</kbd><span id="promptText">Interact</span>
+  </div>
+
+  <!-- Discovery tracker -->
+  <div class="hud hud--quest">
+    <div class="quest__title">EXPLORED</div>
+    <ul class="quest__list" id="questList"></ul>
+  </div>
+
+  <!-- Controls hint -->
+  <div class="hud hud--help" id="helpHint">
+    <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move &nbsp;·&nbsp; <kbd>E</kbd> interact &nbsp;·&nbsp; <kbd>Esc</kbd> close
+  </div>
+
+  <!-- Mobile controls -->
+  <div class="touch" id="touch" hidden>
+    <div class="stick" id="stick"><i id="stickNub"></i></div>
+    <button class="touch__act" id="touchAct" aria-label="Interact">E</button>
+  </div>
+</main>
+
+<!-- ══════════════════════════════ PANEL ══════════════════════════════ -->
+<div class="panel" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+  <div class="panel__scrim" data-close></div>
+  <section class="panel__box">
+    <header class="panel__head">
+      <h2 id="panelTitle" class="panel__title"></h2>
+      <button class="panel__close" data-close aria-label="Close">✕</button>
+    </header>
+    <div class="panel__body" id="panelBody" tabindex="0"></div>
+  </section>
+</div>
+
+<!-- ══════════════════════════ RECRUITER MODE ══════════════════════════ -->
+<div class="doc" id="doc" hidden>
+  <div class="doc__wrap" id="docBody"></div>
+  <button class="btn btn--primary doc__back" id="btnBackToGame">↩ BACK TO THE GAME</button>
+</div>
+
+<noscript>
+  <div class="doc" style="display:block">
+    <div class="doc__wrap">
+      <h1>JavaScript is required for the interactive portfolio.</h1>
+      <p>Please enable JavaScript, or contact me directly using the details in my resume.</p>
+    </div>
+  </div>
+</noscript>
+
+<script src="js/data.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/world.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
