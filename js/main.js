@@ -118,7 +118,7 @@
   el('btnRecruiter').addEventListener('click', showDoc);
   el('btnBackToGame').addEventListener('click', () => {
     hideDoc();
-    if (el('game').hidden) launchGame();   // arrived here via "Skip" on boot
+    if (el('game').hidden) safeLaunch();   // arrived here via "Skip" on boot
   });
   el('btnMap').addEventListener('click', openMap);
 
@@ -144,6 +144,25 @@
   });
 
   /* ── Launch ──────────────────────────────────────────────────── */
+
+  /* If anything in here throws, the START button would just sit there
+     doing nothing with no explanation. Surface the failure and offer the
+     plain-text version, so the content is never unreachable. */
+  function safeLaunch() {
+    try {
+      launchGame();
+    } catch (err) {
+      el('boot').hidden = false;
+      el('game').hidden = true;
+      el('bootStart').hidden = true;
+      el('bootLog').insertAdjacentHTML('beforeend',
+        `<div style="color:#ff2e97;margin-top:14px">&gt; game failed to start: ${UI.esc(err && err.message || err)}</div>
+         <div style="color:#9d93c4">&gt; opening the plain version instead…</div>`);
+      setTimeout(showDoc, 900);
+      throw err;                      // still report it to the console
+    }
+  }
+
   function launchGame() {
     document.body.classList.remove('is-booting');
     el('boot').hidden = true;
@@ -176,5 +195,5 @@
     showDoc();
   });
 
-  UI.runBoot(launchGame);
+  UI.runBoot(safeLaunch);
 })();
