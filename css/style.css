@@ -28,6 +28,12 @@
 
 *,*::before,*::after{ box-sizing:border-box; }
 
+/* The browser's own `[hidden]{display:none}` is a USER-AGENT rule, and any
+   author rule beats it — so `.boot{display:grid}` below silently defeated
+   it and left the boot screen painted over the running game forever.
+   This puts the hidden attribute back in charge for good. */
+[hidden]{ display:none !important; }
+
 html,body{
   margin:0; padding:0; height:100%;
   background:var(--bg); color:var(--ink);
