@@ -27,25 +27,38 @@ $mime = @{
   ".webmanifest"="application/manifest+json"
 }
 
-$listener = New-Object System.Net.HttpListener
-try {
-  $listener.Prefixes.Add("http://localhost:$Port/")
-  $listener.Start()
-} catch {
+$listener = $null
+$bound = $false
+foreach ($try in $Port..($Port + 9)) {
+  try {
+    $l = New-Object System.Net.HttpListener
+    $l.Prefixes.Add("http://localhost:$try/")
+    $l.Start()
+    $listener = $l; $Port = $try; $bound = $true
+    break
+  } catch { }
+}
+
+if (-not $bound) {
   Write-Host ""
-  Write-Host "  Could not listen on port $Port." -ForegroundColor Red
-  Write-Host "  Something else is probably using it. Try:  .\tools\serve.ps1 -Port 8090"
+  Write-Host "  Could not open a port between $Port and $($Port + 9)." -ForegroundColor Red
+  Write-Host "  Close whatever is using them, or run:  .\tools\serve.ps1 -Port 9100"
   Write-Host ""
   Read-Host "  Press Enter to close"
   exit 1
 }
 
+$url = "http://localhost:$Port/"
 Write-Host ""
 Write-Host "  Portfolio running at " -NoNewline
-Write-Host "http://localhost:$Port/" -ForegroundColor Cyan
+Write-Host $url -ForegroundColor Cyan
 Write-Host "  Serving $Root"
 Write-Host "  Leave this window open. Close it to stop the server."
 Write-Host ""
+
+# Open the browser only now that the port is actually accepting connections,
+# otherwise it races the listener and lands on "connection refused".
+Start-Process $url | Out-Null
 
 while ($listener.IsListening) {
   try {
