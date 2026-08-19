@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Emoji Connect Puzzle</title>
+  <meta name="viewport"
+    content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1,minimal-ui=true" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="full-screen" content="yes" />
+  <meta name="screen-orientation" content="portrait" />
+  <meta name="x5-fullscreen" content="true" />
+  <meta name="360-fullscreen" content="true" />
+  <meta name="renderer" content="webkit" />
+  <meta name="force-rendering" content="webkit" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <link rel="stylesheet" type="text/css" href="./style.ad77d.css" />
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #020408;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* ── BACKGROUND CANVAS ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── SCANLINE VIGNETTE OVER BG ── */
+    #vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+    }
+
+    #vignette::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.04) 3px,
+          rgba(0, 0, 0, 0.04) 4px);
+    }
+
+    /* ── HUD LINES (decorative corners of viewport) ── */
+    .hud-corner {
+      position: fixed;
+      width: 48px;
+      height: 48px;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .hud-corner::before,
+    .hud-corner::after {
+      content: '';
+      position: absolute;
+      background: #00f0ff;
+      box-shadow: 0 0 8px #00f0ff;
+    }
+
+    .hud-tl {
+      top: 16px;
+      left: 16px;
+    }
+
+    .hud-tl::before {
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 28px;
+    }
+
+    .hud-tl::after {
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 2px;
+    }
+
+    .hud-tr {
+      top: 16px;
+      right: 16px;
+    }
+
+    .hud-tr::before {
+      top: 0;
+      right: 0;
+      width: 2px;
+      height: 28px;
+    }
+
+    .hud-tr::after {
+      top: 0;
+      right: 0;
+      width: 28px;
+      height: 2px;
+    }
+
+    .hud-bl {
+      bottom: 16px;
+      left: 16px;
+    }
+
+    .hud-bl::before {
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      height: 28px;
+    }
+
+    .hud-bl::after {
+      bottom: 0;
+      left: 0;
+      width: 28px;
+      height: 2px;
+    }
+
+    .hud-br {
+      bottom: 16px;
+      right: 16px;
+    }
+
+    .hud-br::before {
+      bottom: 0;
+      right: 0;
+      width: 2px;
+      height: 28px;
+    }
+
+    .hud-br::after {
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 2px;
+    }
+
+    /* ── GAME CONTAINER ── */
+    #game-shell {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      /* Use vh/vw to fit within viewport with padding */
+      max-width: calc(100vw - 16px);
+      max-height: calc(100vh - 16px);
+    }
+
+    /* Animated border via conic-gradient rotation */
+    #border-ring {
+      padding: 2px;
+      border-radius: 6px;
+      position: relative;
+      background: conic-gradient(from var(--angle, 0deg),
+          #00f0ff 0%,
+          #7c3aed 25%,
+          #00f0ff 50%,
+          #2563eb 75%,
+          #00f0ff 100%);
+      animation: spin-border 4s linear infinite;
+      box-shadow:
+        0 0 24px rgba(0, 240, 255, 0.25),
+        0 0 60px rgba(124, 58, 237, 0.2),
+        0 0 120px rgba(0, 0, 0, 0.9);
+      width: 100%;
+      height: 100%;
+    }
+
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    @keyframes spin-border {
+      to {
+        --angle: 360deg;
+      }
+    }
+
+    /* Inner mask so only border shows */
+    #border-ring::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 4px;
+      background: #020408;
+      z-index: 0;
+    }
+
+    #game-inner {
+      position: relative;
+      z-index: 1;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #000;
+      line-height: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #GameDiv {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #Cocos3dGameContainer {
+      width: 100%;
+      height: 100%;
+    }
+
+    #GameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+  <div id="vignette"></div>
+
+  <div class="hud-corner hud-tl"></div>
+  <div class="hud-corner hud-tr"></div>
+  <div class="hud-corner hud-bl"></div>
+  <div class="hud-corner hud-br"></div>
+
+  <div id="game-shell">
+    <div id="border-ring">
+      <div id="game-inner">
+        <div id="GameDiv" cc_exact_fit_screen="false">
+          <div id="Cocos3dGameContainer">
+            <canvas id="GameCanvas" width="640" height="1136" tabindex="99"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Polyfills bundle. -->
+
+<script src="src/polyfills.bundle.5adbf.js" charset="utf-8"> </script>    
+
+
+<!-- SystemJS support. -->
+<script src="src/system.bundle.543e6.js" charset="utf-8"> </script>
+
+<!-- Import map -->
+<script src="src/import-map.dd101.json" type="systemjs-importmap" charset="utf-8"> </script>
+
+<script>
+    System.import('./index.6f58b.js').catch(function(err) { console.error(err); })
+</script>
+
+    <script>
+      /* ── PARTICLE FIELD BACKGROUND ── */
+      (function () {
+        var c = document.getElementById('bg-canvas');
+        var ctx = c.getContext('2d');
+        var W, H, particles, lines;
+
+        function resize() {
+          W = c.width = window.innerWidth;
+          H = c.height = window.innerHeight;
+        }
+
+        var COLORS = ['#00f0ff', '#7c3aed', '#2563eb', '#a78bfa', '#38bdf8'];
+
+        function rand(min, max) { return min + Math.random() * (max - min); }
+
+        function initParticles() {
+          var count = Math.floor((W * H) / 9000);
+          particles = [];
+          for (var i = 0; i < count; i++) {
+            particles.push({
+              x: rand(0, W), y: rand(0, H),
+              vx: rand(-0.15, 0.15), vy: rand(-0.15, 0.15),
+              r: rand(0.8, 2.2),
+              color: COLORS[Math.floor(Math.random() * COLORS.length)],
+              alpha: rand(0.3, 0.9)
+            });
+          }
+        }
+
+        var mouse = { x: W / 2, y: H / 2 };
+        window.addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+        function draw() {
+          ctx.clearRect(0, 0, W, H);
+          ctx.fillStyle = '#020408';
+          ctx.fillRect(0, 0, W, H);
+
+          /* connect nearby particles */
+          for (var i = 0; i < particles.length; i++) {
+            for (var j = i + 1; j < particles.length; j++) {
+              var dx = particles[i].x - particles[j].x;
+              var dy = particles[i].y - particles[j].y;
+              var dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 120) {
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.strokeStyle = 'rgba(0,240,255,' + (0.06 * (1 - dist / 120)) + ')';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          }
+
+          /* draw + move particles */
+          for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+
+            /* subtle mouse attraction */
+            var mdx = mouse.x - p.x;
+            var mdy = mouse.y - p.y;
+            var mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+            if (mdist < 180) {
+              p.vx += mdx / mdist * 0.003;
+              p.vy += mdy / mdist * 0.003;
+            }
+
+            /* speed cap */
+            var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+            if (speed > 0.6) { p.vx *= 0.6 / speed; p.vy *= 0.6 / speed; }
+
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+
+          requestAnimationFrame(draw);
+        }
+
+        resize();
+        initParticles();
+        draw();
+        window.addEventListener('resize', function () { resize(); initParticles(); });
+      })();
+
+      /* ── ADAPTIVE SIZING WITHOUT CSS SCALE ── */
+      (function () {
+        var canvas = document.getElementById('GameCanvas');
+        var originalWidth = canvas.width;
+        var originalHeight = canvas.height;
+        var aspectRatio = originalWidth / originalHeight;
+        var shell = document.getElementById('game-shell');
+        var borderRing = document.getElementById('border-ring');
+        var gameInner = document.getElementById('game-inner');
+
+        function updateSize() {
+          var maxWidth = window.innerWidth - 16;
+          var maxHeight = window.innerHeight - 16;
+          
+          var width, height;
+          
+          if (maxWidth / maxHeight > aspectRatio) {
+            // Height limited
+            height = maxHeight;
+            width = height * aspectRatio;
+          } else {
+            // Width limited
+            width = maxWidth;
+            height = width / aspectRatio;
+          }
+          
+          // Set the shell size (no CSS transform needed)
+          shell.style.width = width + 'px';
+          shell.style.height = height + 'px';
+          shell.style.top = '50%';
+          shell.style.left = '50%';
+          shell.style.transform = 'translate(-50%, -50%)';
+        }
+
+        updateSize();
+        window.addEventListener('resize', updateSize);
+        window.addEventListener('orientationchange', function() {
+          setTimeout(updateSize, 100);
+        });
+      })();
+    </script>
+</body>
+
+</html>

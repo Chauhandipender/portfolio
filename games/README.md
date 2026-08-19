@@ -82,3 +82,12 @@ its URL directly, with no referrer at all).
 which browsers refuse to load over `file://`. The portfolio itself works
 fine double-clicked, but an embedded ES-module game will only run over
 http (local server, GitHub Pages, Netlify). Not a problem once deployed.
+
+## If you re-export a build
+
+Re-copying a build over `games/<name>/` overwrites any tweaks made to it.
+Two that are currently applied and worth re-applying:
+
+- `games/emoji-connect/index.html` — `<title>` changed from the default
+  "Cocos Creator | Emoji_Match" to "Emoji Connect Puzzle".
+- `games/waypoint/src/sitelock.js` — same-origin rule (see above).

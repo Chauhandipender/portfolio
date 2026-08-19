@@ -110,7 +110,8 @@ PF.DATA = {
       ],
       tags:  ["Unity 6", "C#", "URP", "WebGL", "Procedural generation"],
       links: [],
-      play:  { type: "embed", url: "https://jungle-turret.netlify.app/" },
+      play:  { type: "embed", url: "https://jungle-turret.netlify.app/",
+               note: "Unity WebGL, ~13 MB — give it a moment to load. Mouse aims, left click fires." },
       note:  "Personal project — playable in the browser above.",
       art: ["#4dff9e", "#1f8a4c"],
     },
@@ -173,10 +174,8 @@ PF.DATA = {
       ],
       tags:  ["Cocos Creator", "TypeScript", "Algorithms", "Personal project"],
       links: [],
-      /* No web build exists yet — build/ only has an android export.
-         Export Web Mobile from Cocos Creator into games/emoji-connect/
-         then switch this to: { type: "embed", url: "games/emoji-connect/index.html" } */
-      play:  { type: "soon", note: "web build in progress" },
+      play:  { type: "embed", url: "games/emoji-connect/index.html",
+               note: "Portrait game — best in a tall window or on a phone." },
       note:  "Built in my own time — the algorithm work here is the part I'd most like to talk through.",
       art: ["#ffcf3d", "#4dff9e"],
     },
