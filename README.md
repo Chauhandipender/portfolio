@@ -36,14 +36,30 @@ rather than as broken hrefs, so a half-finished edit can't embarrass you.
 
 ## Running it locally
 
-No build step, no npm, no dependencies. Either:
+No build step, no npm, no dependencies. **Double-click `serve.cmd`.**
 
-- Double-click `index.html`, or
-- Serve the folder (needed only if you add `fetch`-based features later):
+It starts a tiny PowerShell web server and opens
+<http://localhost:8080>. Leave the console window open while you browse;
+close it to stop the server.
 
-```bash
-npx serve .
+### Why not just double-click index.html?
+
+That works for the portfolio itself, but **the bundled games will not
+run**. Opening a file directly puts the page on `file://`, and the game
+builds in `games/` load their assets with `fetch()`, which every browser
+blocks from a `file://` origin:
+
 ```
+Access to fetch at 'file:///.../import-map.json' from origin 'null'
+has been blocked by CORS policy
+```
+
+Nothing is broken when that happens — the build just needs to be served
+over http. The player says so on screen if you hit it. On the deployed
+site it never happens, because GitHub Pages serves over https.
+
+(The Netlify-hosted game still plays from `file://`, since it loads from
+a real https origin.)
 
 ## Deploying to GitHub Pages
 

@@ -154,10 +154,45 @@
   function openPlayer(url, title) {
     el('playerTitle').textContent = title || 'Playable build';
     el('playerTab').href = url;
-    el('playerFrame').src = url;
-    const hint = el('playerHint');
+    const hint = el('playerHint'), notice = el('playerNotice'), frame = el('playerFrame');
+
+    /* A build that ships inside this repo is loaded with a relative URL. Over
+       file:// those builds cannot start: their loaders fetch a manifest, and
+       fetch() from a file:// page is an opaque origin that every browser
+       blocks. Say so plainly instead of showing a dead black rectangle with
+       the reason buried in the console. */
+    const isLocalBuild = !/^https?:\/\//i.test(url);
+    if (isLocalBuild && location.protocol === 'file:') {
+      frame.removeAttribute('src');
+      frame.hidden = true;
+      hint.hidden = true;
+      notice.hidden = false;
+      notice.innerHTML =
+        '<div class="nbox">' +
+        '<h3>THIS BUILD NEEDS A WEB SERVER</h3>' +
+        '<p>You opened the portfolio straight from a folder, so the page is running ' +
+        'on <code>file://</code>. Games bundled in this repo load their assets with ' +
+        '<code>fetch()</code>, which every browser blocks on <code>file://</code>. ' +
+        'Nothing is broken — it just needs to be served over http.</p>' +
+        '<p>Double-click <code>serve.cmd</code> in the portfolio folder, then use the ' +
+        'address it opens:</p>' +
+        '<span class="cmd">serve.cmd &nbsp;→&nbsp; http://localhost:8080</span>' +
+        '<p style="opacity:.7;font-size:13px">On the deployed site this never happens — ' +
+        'GitHub Pages serves over https, so every build plays normally.</p>' +
+        '</div>';
+      el('player').hidden = false;
+      playerOpen = true;
+      E.setPaused(true);
+      el('playerClose').focus();
+      return;
+    }
+
+    notice.hidden = true;
+    frame.hidden = false;
+    hint.hidden = false;
     hint.classList.remove('warn');
     hint.innerHTML = 'Loading build…';
+    frame.src = url;
     el('player').hidden = false;
     playerOpen = true;
     E.setPaused(true);
