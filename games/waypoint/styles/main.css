@@ -1,0 +1,796 @@
+/* Waypoint — tokens and layout.
+   Every colour in the UI comes from the token set in SPEC §9. Nothing else. */
+
+/* One webfont, self-hosted from a relative path — no CDN, no runtime request
+   to anyone. Space Grotesk, SIL OFL 1.1 (see assets/OFL.txt): a variable
+   grotesque with unambiguous numerals, which is what SPEC §9 asks for. This is
+   the Latin subset Google Fonts already ships, 21.8KB.
+
+   The board's numerals are still drawn as paths in numerals.js — this is for
+   the words around them. */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('../assets/space-grotesk-latin.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  /* Never block the first board on a font. */
+  unicode-range: U+0000-00FF, U+2013-2014, U+2018-2019, U+201C-201D, U+2026;
+}
+
+:root {
+  --paper: #e7e9e3;
+  --grid: #cfd4cb;
+  --ink: #1e2721;
+  --muted: #6e776e;
+  --wall: #2b342d;
+  --visited: #daded6;
+
+  /* Each line gets a lit and a deep variant so it can be shaded rather than
+     flat. The mid value is the one SPEC §9 specifies; the other two are
+     derived from it and keep the same hue. */
+  --line-1: #c8452e; /* clay   */
+  --line-1-lit: #e4694f;
+  --line-1-deep: #96301f;
+  --line-2: #1f6f8b; /* cobalt */
+  --line-2-lit: #3f9fbe;
+  --line-2-deep: #14515f;
+  --line-3: #b08307; /* ochre  */
+  --line-3-lit: #ddaa22;
+  --line-3-deep: #7d5c04;
+  --line-4: #4a6a3f; /* moss   */
+  --line-4-lit: #7ca06d;
+  --line-4-deep: #33492c;
+  --line-5: #7a3e7e; /* plum   */
+  --line-5-lit: #ab6dae;
+  --line-5-deep: #562a58;
+  /* Three further lines beyond SPEC §9's five. The ladder used to spend 76% of
+     its length on one colour; progression is meant to be read off the palette,
+     and a palette that stops changing stops saying anything. Each clears 3:1
+     on both grounds — see tools/contrast.js. */
+  --line-6: #157f73; /* teal   */
+  --line-6-lit: #31a598;
+  --line-6-deep: #0d5a51;
+  --line-7: #8a5a2e; /* bronze */
+  --line-7-lit: #b98853;
+  --line-7-deep: #5e3c1d;
+  --line-8: #46519b; /* indigo */
+  --line-8-lit: #7580c9;
+  --line-8-deep: #2f376b;
+
+  /* Resolved per tier below; --line is then picked per theme. */
+  --line-base: var(--line-1);
+  --line-lit: var(--line-1-lit);
+  --line-deep: var(--line-1-deep);
+  --line: var(--line-base);
+
+  --pad: 12px;
+  /* Tall enough that the 44px targets are not flush against the edges. The
+     board's height is computed from this, so it adjusts on its own. */
+  --bar-height: 52px;
+  --rule: 10px; /* the progress rule plus the air under it */
+  --motion: 180ms;
+  --motion-solve: 700ms;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Three theme states: follow the system, or override it in either direction.
+   The media query is scoped so an explicit light choice still wins on a dark
+   system, and the attribute rules come last so they win either way. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #171b18;
+    --grid: #272e28;
+    --ink: #e7e9e3;
+    --muted: #8a948a;
+    --wall: #0e110f;
+    --visited: #1f2621;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #171b18;
+  --grid: #272e28;
+  --ink: #e7e9e3;
+  --muted: #8a948a;
+  --wall: #0e110f;
+  --visited: #1f2621;
+}
+
+:root[data-theme='light'] {
+  --paper: #e7e9e3;
+  --grid: #cfd4cb;
+  --ink: #1e2721;
+  --muted: #6e776e;
+  --wall: #2b342d;
+  --visited: #daded6;
+}
+
+/* Tier -> the three shades of its line. Set from main.js via data-tier. */
+:root[data-tier='1'] { --line-base: var(--line-1); --line-lit: var(--line-1-lit); --line-deep: var(--line-1-deep); }
+:root[data-tier='2'] { --line-base: var(--line-2); --line-lit: var(--line-2-lit); --line-deep: var(--line-2-deep); }
+:root[data-tier='3'] { --line-base: var(--line-3); --line-lit: var(--line-3-lit); --line-deep: var(--line-3-deep); }
+:root[data-tier='4'] { --line-base: var(--line-4); --line-lit: var(--line-4-lit); --line-deep: var(--line-4-deep); }
+:root[data-tier='5'] { --line-base: var(--line-5); --line-lit: var(--line-5-lit); --line-deep: var(--line-5-deep); }
+:root[data-tier='6'] { --line-base: var(--line-6); --line-lit: var(--line-6-lit); --line-deep: var(--line-6-deep); }
+:root[data-tier='7'] { --line-base: var(--line-7); --line-lit: var(--line-7-lit); --line-deep: var(--line-7-deep); }
+:root[data-tier='8'] { --line-base: var(--line-8); --line-lit: var(--line-8-lit); --line-deep: var(--line-8-deep); }
+
+/* On dark paper the mid value is too close to the ground — plum sits at
+   2.34:1 — so the whole line shifts up a shade and the deep value becomes the
+   spec's own mid. Same hue, legible against both grounds. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --line: var(--line-lit);
+    --line-deep: var(--line-base);
+  }
+}
+
+:root[data-theme='dark'] {
+  --line: var(--line-lit);
+  --line-deep: var(--line-base);
+}
+
+:root[data-theme='light'] {
+  --line: var(--line-base);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* no scroll bounce on iOS */
+  overscroll-behavior: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-variant-numeric: tabular-nums;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  /* All four prefixes, page-wide, exactly as the platform's technical
+     requirements specify — a long press anywhere must not raise the touch
+     magnifier or a selection handle mid-drag. */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+/* ---------------------------------------------------------------- top bar */
+
+.bar {
+  flex: 0 0 auto;
+  height: var(--bar-height);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 var(--pad);
+  gap: 8px;
+}
+
+.bar-left {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-self: start;
+  min-width: 0;
+}
+
+/* Today's puzzle is unplayed. The dot is the only thing in the game that asks
+   for attention, and it earns it: the daily is the reason to come back. */
+.tools button.has-news::after {
+  content: '';
+  position: absolute;
+  transform: translate(10px, -10px);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+
+/* A new line opening: the bar's colour swells briefly. No overlay, nothing to
+   dismiss, and gone before the player has finished reading the board. */
+@keyframes new-line {
+  0% { transform: scale(1); }
+  22% { transform: scale(1.9); }
+  100% { transform: scale(1); }
+}
+
+body.new-line .line-name::before {
+  animation: new-line 1.1s var(--ease);
+}
+
+body.new-line .line-name {
+  animation: new-line-text 1.2s var(--ease);
+}
+
+@keyframes new-line-text {
+  0% { color: var(--ink); letter-spacing: 0.06em; }
+  25% { color: var(--line); letter-spacing: 0.2em; }
+  100% { color: var(--ink); letter-spacing: 0.06em; }
+}
+
+/* A route bullet, like the coloured tab beside a line's name on a transit
+   map. It carries the tier colour as a graphic, which only needs 3:1, so the
+   name itself can stay ink and clear 4.5:1. */
+.line-name::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line);
+  margin-right: 7px;
+  vertical-align: baseline;
+  transition: background var(--motion) var(--ease);
+}
+
+.line-name {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--motion) var(--ease);
+}
+
+.level-number {
+  display: flex;
+  align-items: center;
+  justify-self: center;
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The level number uses the game's own drawn numerals, so the one number on
+   screen outside the board is in the same hand as the ones on it. */
+.numeral {
+  height: 17px;
+  width: auto;
+  display: block;
+  overflow: visible;
+}
+
+.tools {
+  display: flex;
+  gap: 2px;
+  justify-self: end;
+}
+
+.tools button {
+  /* 44px square: a comfortable target on a phone, and the size the platform's
+     own guidance asks for. */
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tools button:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.tools button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tools button svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The gear is a denser shape than the other glyphs, so the same stroke weight
+   reads heavier on it. Thinner, and it sits at the same visual density. */
+#open-panel svg {
+  stroke-width: 1.45;
+}
+
+/* The hint is the one tool a stuck player needs to find, and unlimited hints
+   are no use if nobody notices them. It carries the line's own colour so it
+   reads as offered rather than as a warning. */
+.tools button.accent {
+  color: var(--line);
+  background: color-mix(in srgb, var(--line) 11%, transparent);
+}
+
+.tools button.accent:hover:not(:disabled) {
+  color: var(--line);
+  background: color-mix(in srgb, var(--line) 20%, transparent);
+}
+
+/* A visible focus ring on everything interactive, per SPEC §8. */
+.tools button:focus-visible,
+.board:focus-visible {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------- progress rule */
+
+/* How far the line has got, as a rule across the top of the sheet. It reads as
+   part of the same drawing as the board rather than as a widget, and it says
+   the one thing a player mid-solve actually wants to know: how much is left.
+   Deliberately silent — no percentage, no readout. */
+.progress {
+  flex: 0 0 auto;
+  height: 4px;
+  margin: 0 var(--pad) 6px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--muted) 20%, transparent);
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  /* The same shading the line itself carries, so the rule reads as the route
+     laid out straight rather than as a separate meter. */
+  background: linear-gradient(90deg, var(--line-deep), var(--line));
+  transition: width var(--motion) var(--ease), background var(--motion) var(--ease);
+}
+
+/* Full. A solved board earns the small flourish of the rule going solid. */
+.progress-fill.full {
+  background: var(--line);
+}
+
+/* ------------------------------------------------------------------ board */
+
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--pad) var(--pad);
+}
+
+.board {
+  /* Square, and as large as the smaller of the two available dimensions. */
+  width: min(100%, calc(100dvh - var(--bar-height) - var(--rule) - var(--pad) * 3 - 8px));
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  touch-action: none; /* we handle every gesture ourselves */
+  display: block;
+  /* A sheet of paper resting on the surface, rather than a grid painted onto
+     it. The shadow is deliberately soft and close — tactile, not glassy. */
+  border-radius: 12px;
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 0.04),
+    0 6px 18px -6px rgb(0 0 0 / 0.16);
+}
+
+
+/* Board layers ------------------------------------------------------------ */
+
+/* Blocked cells are hatched, the way "no access" is marked on a technical
+   drawing. It also survives the dark palette, where --wall sits within 1.09:1
+   of --paper and a flat block would be invisible. */
+.wall-ground {
+  fill: var(--wall);
+}
+
+.wall-rule {
+  stroke: var(--muted);
+  opacity: 0.55;
+}
+
+.cell-wall {
+  fill: url(#wall-hatch);
+  stroke: var(--muted);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Drawn cells are tinted with the tier's own colour rather than a neutral
+   grey, so the board picks up the line's hue as it fills. */
+.cell-visited {
+  fill: var(--line);
+  opacity: 0;
+  transition: opacity var(--motion) var(--ease);
+}
+
+.cell-visited.on {
+  opacity: 0.13;
+}
+
+.board-ground {
+  fill: var(--paper);
+}
+
+.board-wash {
+  fill: url(#board-wash);
+}
+
+/* --grid alone lands at 1.23:1, which is invisible rather than quiet, and the
+   sheet stops reading as ruled at all. Muted at low alpha keeps the ruling
+   faint but actually present. */
+.grid-line {
+  stroke: var(--muted);
+  stroke-opacity: 0.32;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A firmer edge around the sheet than the ruling inside it. */
+.grid-frame {
+  fill: none;
+  stroke: var(--muted);
+  stroke-opacity: 0.5;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Ink, not --wall: a barrier is a hard rule the player must be able to see,
+   and --wall is all but invisible against the dark paper. */
+.barrier line {
+  stroke: var(--ink);
+  stroke-linecap: round;
+}
+
+/* The line itself: one fat stroke, mitred corners, shaded along its length. */
+.trail {
+  fill: none;
+  stroke: url(#line-grad);
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  stroke-miterlimit: 2;
+}
+
+/* Lifts the line off the sheet. Offset rather than blurred, because a filter
+   would re-rasterise on every pointer move. */
+.trail-shadow {
+  fill: none;
+  stroke: rgb(0 0 0 / 0.2);
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  stroke-miterlimit: 2;
+  transform: translateY(3.5px);
+}
+
+:root[data-theme='dark'] .trail-shadow {
+  stroke: rgb(0 0 0 / 0.45);
+}
+
+/* The casing is what a transit map puts under a route so it stays crisp
+   wherever it runs over other detail. Here it lifts the line off the ruling. */
+.trail-casing {
+  fill: none;
+  stroke: var(--paper);
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  stroke-miterlimit: 2;
+}
+
+.trail-hint {
+  fill: none;
+  stroke: var(--line);
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  opacity: 0.3;
+  stroke-dasharray: 1 20;
+}
+
+/* Station markers: paper disc, line-coloured ring, ink numeral. Ink on paper
+   clears 4.5:1 in both themes by construction. */
+.mark-disc {
+  fill: var(--paper);
+  stroke: var(--line);
+  transition: stroke-width var(--motion) var(--ease);
+}
+
+/* The first and last stop carry the double ring a transit map gives a
+   terminus, so where the line starts and ends is legible before you read a
+   single numeral. */
+.mark-outer {
+  fill: none;
+  stroke: var(--line);
+  opacity: 0.45;
+}
+
+/* Reached: the ring thickens. The disc stays paper-coloured so the numeral
+   keeps its ink-on-paper contrast in every state. */
+.mark.on .mark-disc {
+  stroke-width: 12;
+}
+
+/* Drawn glyphs, not type — see numerals.js. Stroked in the same language as
+   the line itself: one weight, round terminals. */
+.mark-label {
+  fill: none;
+  stroke: var(--ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mark-shadow {
+  fill: rgb(0 0 0 / 0.16);
+}
+
+:root[data-theme='dark'] .mark-shadow {
+  fill: rgb(0 0 0 / 0.4);
+}
+
+/* The solve animation itself is driven from board.js, because the line's
+   length is only known there. */
+
+.board.leaving {
+  transform: translateX(-8%);
+  opacity: 0;
+  transition: transform var(--motion) var(--ease), opacity var(--motion) var(--ease);
+}
+
+.board.entering {
+  transform: translateX(8%);
+  opacity: 0;
+}
+
+/* ------------------------------------------------- demo and celebration */
+
+/* The first-play demonstration. Deliberately drawn in the line's own colour
+   at low opacity, so it reads as a preview of the real thing. */
+.demo-trail {
+  fill: none;
+  stroke: var(--line);
+  stroke-linecap: round;
+  stroke-linejoin: miter;
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.demo-pointer {
+  fill: var(--ink);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Above the board, below the panel's top layer, and never in the way. */
+.confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ------------------------------------------------------------------ panel */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.panel {
+  border: 0;
+  padding: 0;
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  max-width: min(340px, calc(100vw - 32px));
+  width: 100%;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.18);
+}
+
+.panel::backdrop {
+  background: rgb(0 0 0 / 0.35);
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+}
+
+.panel section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel button {
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: 1px solid var(--muted);
+  border-radius: 9px;
+  padding: 11px 12px;
+  cursor: pointer;
+  transition: border-color var(--motion) var(--ease), background var(--motion) var(--ease);
+}
+
+.panel button:hover {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--line) 8%, transparent);
+}
+
+.panel button:focus-visible {
+  outline: 2px solid var(--line);
+  outline-offset: 2px;
+}
+
+.panel button.wide {
+  width: 100%;
+}
+
+.panel button.quiet {
+  border-color: transparent;
+  color: var(--ink);
+}
+
+/* The one action in the panel. The colour is carried by the border and a wash
+   rather than by a solid fill: paper-on-clay is 3.95:1, which is under the bar
+   for 12px text, whereas ink over a wash stays at ink-on-paper contrast. */
+.panel #daily-play {
+  border: 1.5px solid var(--line);
+  background: color-mix(in srgb, var(--line) 13%, transparent);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 14px 12px;
+}
+
+.panel #daily-play:hover {
+  background: color-mix(in srgb, var(--line) 22%, transparent);
+  border-color: var(--line);
+}
+
+/* Matches the stats labels exactly, so the panel has one voice. */
+.note {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+  opacity: 0.62;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.note-dot {
+  opacity: 0.55;
+}
+
+.numeral-note {
+  height: 11px;
+  opacity: 0.85;
+}
+
+.stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 11px 16px;
+}
+
+/* Labels as small caps with air in them: the numbers are the content, the
+   labels are the ruling. */
+.stats dt {
+  color: var(--ink);
+  opacity: 0.62;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.stats dd {
+  margin: 0;
+  display: flex;
+  justify-content: flex-end;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.numeral-stat {
+  height: 15px;
+}
+
+/* A ruled line between rows, like a printed table. */
+.stats dt:not(:first-of-type),
+.stats dd:not(:first-of-type) {
+  border-top: 1px solid var(--muted);
+  border-color: color-mix(in srgb, var(--muted) 35%, transparent);
+  padding-top: 11px;
+}
+
+.toggles {
+  flex-direction: row !important;
+}
+
+.toggles button {
+  flex: 1 1 0;
+}
+
+/* Shown only when the page was opened from disk instead of through a server.
+   Same voice as the sitelock notice — this is the game explaining itself, not
+   an error dialog. */
+.offline-note {
+  margin: auto;
+  padding: var(--pad);
+  max-width: 34ch;
+  text-align: center;
+  line-height: 1.6;
+  color: var(--ink);
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- sitelock */
+
+/* All that is left on the page when the build is running somewhere it should
+   not be. Same paper, same ink, same sentence case as everything else. */
+.sitelock {
+  margin: auto;
+  padding: var(--pad);
+  text-align: center;
+  color: var(--ink);
+  opacity: 0.62;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .board.leaving,
+  .board.entering {
+    transform: none;
+    opacity: 1;
+  }
+}

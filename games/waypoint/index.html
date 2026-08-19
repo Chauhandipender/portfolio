@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+    <title>Waypoint</title>
+    <meta name="description" content="Draw one line through every cell, in order." />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Inlined, not served: the browser asks for /favicon.ico unprompted and a
+         missing one is a console error. A data URI answers it with no request
+         at all. Drawn by tools/make-favicon.js — re-run it to change the icon,
+         do not hand-edit the blob. -->
+    <link
+      rel="icon"
+      href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAA1klEQVR42mNgQALPXz5WeP7ycf/zl4/PP3/5+D+V8Xmo2QoM2MDzl48Tnr98/J4GFqNjkB0J2Cz/T2ecgBzs7wfAAe/B0QGNl/8DhPsZKE1w9w9sI4jxJUwGSiy/VJH+/4SrHkEMUofLDAZKfE6M5TCMKyRGhgPoFgU3F04hNRFS1wGELBt6DsCXt0HBTVMHEJvHaeIAUrPYqAMI5XWqOABXHicmr1PFAZRYMuqAUQeMOoCQA84TqgvILWSI6S3hbZZTWsgQ2ywf2I7JgHfNBkXndCC75wB8v2/L2LyPkAAAAABJRU5ErkJggg=="
+    />
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <!-- No menu and no splash: the board is the first and only thing. -->
+    <header class="bar">
+      <div class="bar-left">
+        <span class="line-name" id="line-name"></span>
+      </div>
+      <span class="level-number" id="level-number"></span>
+      <nav class="tools">
+        <button id="undo" type="button" aria-label="Undo" aria-keyshortcuts="Z">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 7H15a5 5 0 0 1 0 10H8" />
+            <path d="M12 4 8.5 7 12 10" />
+          </svg>
+        </button>
+        <button id="restart" type="button" aria-label="Restart" aria-keyshortcuts="R">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12a7 7 0 1 1-2.5-5.4" />
+            <path d="M19 4v4h-4" />
+          </svg>
+        </button>
+        <button id="hint" class="accent" type="button" aria-label="Hint">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4a5 5 0 0 1 3 9v2H9v-2a5 5 0 0 1 3-9Z" />
+            <path d="M10 19h4" />
+          </svg>
+        </button>
+        <!-- Settings sits last, on the right, where a settings control is
+             looked for. The gear path is generated, not hand-plotted — see the
+             note in tools/ if the tooth count ever needs changing. -->
+        <button id="open-panel" type="button" aria-label="Daily puzzle and stats" aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10.24 6.11L10.6 3.62L13.4 3.62L13.76 6.11A6.15 6.15 0 0 1 14.92 6.59L16.94 5.08L18.92 7.06L17.41 9.08A6.15 6.15 0 0 1 17.89 10.24L20.38 10.6L20.38 13.4L17.89 13.76A6.15 6.15 0 0 1 17.41 14.92L18.92 16.94L16.94 18.92L14.92 17.41A6.15 6.15 0 0 1 13.76 17.89L13.4 20.38L10.6 20.38L10.24 17.89A6.15 6.15 0 0 1 9.08 17.41L7.06 18.92L5.08 16.94L6.59 14.92A6.15 6.15 0 0 1 6.11 13.76L3.62 13.4L3.62 10.6L6.11 10.24A6.15 6.15 0 0 1 6.59 9.08L5.08 7.06L7.06 5.08L9.08 6.59A6.15 6.15 0 0 1 10.24 6.11Z"
+            />
+            <circle cx="12" cy="12" r="2.6" />
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <!-- How much of the board is drawn. A rule rather than a readout: the game
+         has one number on screen already and does not need a second. -->
+    <div
+      class="progress"
+      id="progress"
+      role="progressbar"
+      aria-label="Level progress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+      <span class="progress-fill" id="progress-fill"></span>
+    </div>
+
+    <main class="stage">
+      <svg
+        id="board"
+        class="board"
+        tabindex="0"
+        role="application"
+        aria-label="Puzzle board. Arrow keys draw the line, backspace steps back, R restarts."
+        preserveAspectRatio="xMidYMid meet"
+      ></svg>
+    </main>
+
+    <!-- The only surface beyond the board: the daily puzzle, the numbers, and
+         the two toggles SPEC §14 allows. Opt-in, so the game still lands
+         directly in gameplay. -->
+    <dialog id="panel" class="panel" aria-label="Daily puzzle and stats">
+      <div class="panel-body">
+        <section>
+          <button id="daily-play" class="wide" type="button">Daily puzzle</button>
+          <p class="note" id="daily-note"></p>
+        </section>
+
+        <section>
+          <dl class="stats" id="stats"></dl>
+        </section>
+
+        <section class="toggles">
+          <button id="theme-toggle" type="button">Theme</button>
+          <button id="audio-toggle" type="button" aria-pressed="true">Sound</button>
+        </section>
+
+        <button id="panel-close" class="wide quiet" type="button">Close</button>
+      </div>
+    </dialog>
+
+    <!-- Nothing on screen; this is how the board reports itself to a screen
+         reader, which otherwise sees only an unlabelled graphic. -->
+    <p id="announce" class="visually-hidden" role="status" aria-live="polite"></p>
+
+    <script type="module" src="./src/main.js"></script>
+
+    <!-- A classic inline script on purpose — it is the only code here that
+         still runs when index.html is opened by double-clicking it, which is
+         precisely the case it exists to explain. Modules and fetch are both
+         blocked on file:// origins, so the game would otherwise show nothing
+         at all and look broken. -->
+    <script>
+      if (location.protocol === 'file:') {
+        document.body.innerHTML =
+          '<p class="offline-note">Waypoint needs a local server — browsers block this page when it is ' +
+          'opened directly from disk. Close this tab and double-click <b>play.cmd</b> instead.</p>';
+      }
+    </script>
+  </body>
+</html>

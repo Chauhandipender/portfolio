@@ -98,6 +98,39 @@ PF.DATA = {
      reaches first, so the strongest work leads.                     */
   projects: [
     {
+      title:  "Jungle Road Turret Shooter",
+      role:   "Solo developer · personal project",
+      engine: "Unity 6 · C# · URP",
+      pitch:  "A truck drives itself down an overgrown jungle highway while you man the rear-facing turret, shooting down the drones and buggies chasing you.",
+      bullets: [
+        "Every mesh, material and texture in the game is generated in code — there are no imported art assets.",
+        "Built a deterministic, idempotent editor tool that rebuilds the whole scene from empty on each run: it creates the project layers, sets the collision matrix, configures lighting and fog, builds the post-processing volume and registers the scene in Build Settings.",
+        "Unity 6 with URP and the new Input System; mouse aiming with left-click fire and an instant restart loop.",
+        "Shipped as a WebGL build, Brotli-compressed and served with the Content-Encoding headers the player requires.",
+      ],
+      tags:  ["Unity 6", "C#", "URP", "WebGL", "Procedural generation"],
+      links: [],
+      play:  { type: "embed", url: "⟪PASTE THE NETLIFY URL HERE⟫" },
+      note:  "Personal project — playable in the browser above.",
+      art: ["#4dff9e", "#1f8a4c"],
+    },
+    {
+      title:  "Waypoint",
+      role:   "Solo developer · personal project",
+      engine: "HTML5 · JavaScript",
+      pitch:  "A single-line logic puzzle: draw one continuous path that passes through every numbered cell in ascending order and visits every open cell exactly once, without ever crossing itself.",
+      bullets: [
+        "Wrote a uniqueness solver and gated level generation behind it, so no puzzle ships unless it has exactly one verified solution.",
+        "Built the procedural level generator, daily and endless modes, difficulty tiering, and local save/progress storage.",
+        "Zero dependencies and no build step — plain ES modules, one webfont and a JSON level pack.",
+      ],
+      tags:  ["HTML5", "JavaScript", "Puzzle", "Solver", "Procedural generation"],
+      links: [],
+      play:  { type: "embed", url: "games/waypoint/index.html" },
+      note:  "Personal project, built for the CrazyGames web portal.",
+      art: ["#ffcf3d", "#b14aff"],
+    },
+    {
       title:  "Cute Animal Car Racing Game",
       role:   "Game Developer · Mfinity Infotech",
       engine: "Cocos Creator · TypeScript",
@@ -140,21 +173,10 @@ PF.DATA = {
       ],
       tags:  ["Cocos Creator", "TypeScript", "Algorithms", "Personal project"],
       links: [],
-      /* ── ADD A PLAYABLE BUILD HERE ──────────────────────────────
-         Pick ONE of these three and delete the rest:
-
-         play: { type: "embed", url: "games/emoji-connect/index.html" },
-             build lives in games/ (or on a host that allows framing);
-             plays inside the portfolio + an OPEN IN TAB button
-
-         play: { type: "link",  url: "https://your-game.netlify.app/" },
-             use when the host refuses to be embedded; opens a new tab
-
-         play: { type: "soon",  note: "build in progress" },
-             not hosted yet — prints an honest line, never a dead link
-
-         Optional on any of them:  note: "Desktop only"
-         See games/README.md for how to export from Cocos / Unity.        */
+      /* No web build exists yet — build/ only has an android export.
+         Export Web Mobile from Cocos Creator into games/emoji-connect/
+         then switch this to: { type: "embed", url: "games/emoji-connect/index.html" } */
+      play:  { type: "soon", note: "web build in progress" },
       note:  "Built in my own time — the algorithm work here is the part I'd most like to talk through.",
       art: ["#ffcf3d", "#4dff9e"],
     },

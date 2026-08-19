@@ -59,3 +59,22 @@ URL instead of committing it.
 A 300-byte page that renders "embed self-test: OK". Point any project at
 `games/_selftest/index.html` to confirm the embedded player works on a
 new host before troubleshooting a real build. Safe to delete.
+
+## Two things that bite on deploy
+
+**1. Waypoint has a sitelock.** `games/waypoint/src/sitelock.js` only allows
+`localhost` and `crazygames.*`. It therefore works perfectly in local
+testing and shows "Available only on CrazyGames" the moment the site is
+live. Add your domain before deploying:
+
+```js
+const PORTFOLIO_HOSTS = ['yourname.github.io'];
+```
+
+Thief domains stay blocked and the CrazyGames build is untouched — this
+is only the portfolio's copy.
+
+**2. ES-module games need a server.** Waypoint uses `import`/`export`,
+which browsers refuse to load over `file://`. The portfolio itself works
+fine double-clicked, but an embedded ES-module game will only run over
+http (local server, GitHub Pages, Netlify). Not a problem once deployed.
