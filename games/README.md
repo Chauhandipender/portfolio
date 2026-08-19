@@ -62,17 +62,21 @@ new host before troubleshooting a real build. Safe to delete.
 
 ## Two things that bite on deploy
 
-**1. Waypoint has a sitelock.** `games/waypoint/src/sitelock.js` only allows
-`localhost` and `crazygames.*`. It therefore works perfectly in local
-testing and shows "Available only on CrazyGames" the moment the site is
-live. Add your domain before deploying:
+**1. Waypoint has a sitelock.** `games/waypoint/src/sitelock.js` ships
+with CrazyGames' anti-theft check, which allows only `localhost` and
+`crazygames.*`. Left alone it would work in local testing and then show
+"Available only on CrazyGames" the moment the site went live.
 
-```js
-const PORTFOLIO_HOSTS = ['yourname.github.io'];
-```
+The portfolio's copy adds a same-origin rule: if the page that framed or
+linked to the build is served from the same host as the build itself,
+it plays. That covers the portfolio on any domain with no configuration,
+so it cannot rot when the domain changes. Hot-linking the files from a
+different site is still blocked, and the copy submitted to CrazyGames is
+untouched.
 
-Thief domains stay blocked and the CrazyGames build is untouched — this
-is only the portfolio's copy.
+`PORTFOLIO_HOSTS` at the top of that file is still there if you ever want
+to name a host explicitly (e.g. so the game also runs when someone types
+its URL directly, with no referrer at all).
 
 **2. ES-module games need a server.** Waypoint uses `import`/`export`,
 which browsers refuse to load over `file://`. The portfolio itself works

@@ -92,9 +92,18 @@ export function isAllowedContext({ hostname = '', embedded = false, referrer = '
   // copy sitting on someone else's site, and it stays playable no matter who
   // framed it — otherwise testing the game in any local iframe blanks it.
   if (!hostname || isDevelopmentHost(hostname)) return true;
+
+  // Same origin: whoever framed or linked to these files is served from the
+  // very same host as the files themselves. That is this site embedding its
+  // own copy — the portfolio case — and it needs no hard-coded domain, so it
+  // cannot rot when the domain changes. Someone hot-linking this build onto a
+  // different site still fails, because their host will not match ours.
+  const from = hostOf(referrer);
+  if (from && from === hostname) return true;
+
   if (!embedded) return isAllowedHost(hostname);
   if (!referrer) return true; // stripped referrer: unknowable, so allow
-  return isAllowedHost(hostOf(referrer));
+  return isAllowedHost(from);
 }
 
 /** Are we inside an iframe? A cross-origin parent throws, which is itself a yes. */

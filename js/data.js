@@ -110,7 +110,7 @@ PF.DATA = {
       ],
       tags:  ["Unity 6", "C#", "URP", "WebGL", "Procedural generation"],
       links: [],
-      play:  { type: "embed", url: "⟪PASTE THE NETLIFY URL HERE⟫" },
+      play:  { type: "embed", url: "https://jungle-turret.netlify.app/" },
       note:  "Personal project — playable in the browser above.",
       art: ["#4dff9e", "#1f8a4c"],
     },
