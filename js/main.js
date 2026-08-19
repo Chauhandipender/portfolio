@@ -134,13 +134,65 @@
   /* ── Keyboard shortcuts ──────────────────────────────────────── */
   window.addEventListener('keydown', e => {
     if (e.code === 'Escape') {
+      if (playerOpen) { closePlayer(); return; }
       if (UI.isPanelOpen()) { closePanel(); return; }
       if (docOpen) { hideDoc(); return; }
     }
-    if (docOpen || UI.isPanelOpen()) return;
+    if (playerOpen || docOpen || UI.isPanelOpen()) return;
     if (e.code === 'KeyM') { e.preventDefault(); openMap(); }
     if (e.code === 'KeyP') { e.preventDefault(); btnAudio.click(); }
     if (e.code === 'KeyR') { e.preventDefault(); showDoc(); }
+  });
+
+  /* ── Playable build player ───────────────────────────────────────
+     Runs a real build in an iframe over the game. Some hosts send
+     X-Frame-Options / frame-ancestors and simply refuse to be framed,
+     and that is not detectable cross-origin — so OPEN IN TAB is always
+     offered rather than leaving a recruiter staring at a black box. */
+  let playerOpen = false, hintTimer = 0;
+
+  function openPlayer(url, title) {
+    el('playerTitle').textContent = title || 'Playable build';
+    el('playerTab').href = url;
+    el('playerFrame').src = url;
+    const hint = el('playerHint');
+    hint.classList.remove('warn');
+    hint.innerHTML = 'Loading build…';
+    el('player').hidden = false;
+    playerOpen = true;
+    E.setPaused(true);
+    el('playerClose').focus();
+
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => {
+      hint.classList.add('warn');
+      hint.innerHTML = 'Still blank? This host may block embedding — ' +
+        `<a href="${UI.esc(url)}" target="_blank" rel="noopener">open it in a new tab ↗</a>`;
+    }, 6000);
+  }
+
+  function closePlayer() {
+    // Blank the frame so the build stops running and its audio stops.
+    el('playerFrame').src = 'about:blank';
+    el('player').hidden = true;
+    playerOpen = false;
+    clearTimeout(hintTimer);
+    if (!UI.isPanelOpen() && !docOpen) E.setPaused(false);
+  }
+
+  // Play buttons live inside panel and recruiter mode, so delegate.
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-play]');
+    if (!b) return;
+    e.preventDefault();
+    openPlayer(b.getAttribute('data-play'), b.getAttribute('data-title'));
+  });
+
+  el('playerClose').addEventListener('click', closePlayer);
+  el('playerFull').addEventListener('click', () => {
+    const s = el('playerStage');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (s.requestFullscreen) s.requestFullscreen();
   });
 
   /* ── Launch ──────────────────────────────────────────────────── */

@@ -140,6 +140,21 @@ PF.DATA = {
       ],
       tags:  ["Cocos Creator", "TypeScript", "Algorithms", "Personal project"],
       links: [],
+      /* ── ADD A PLAYABLE BUILD HERE ──────────────────────────────
+         Pick ONE of these three and delete the rest:
+
+         play: { type: "embed", url: "games/emoji-connect/index.html" },
+             build lives in games/ (or on a host that allows framing);
+             plays inside the portfolio + an OPEN IN TAB button
+
+         play: { type: "link",  url: "https://your-game.netlify.app/" },
+             use when the host refuses to be embedded; opens a new tab
+
+         play: { type: "soon",  note: "build in progress" },
+             not hosted yet — prints an honest line, never a dead link
+
+         Optional on any of them:  note: "Desktop only"
+         See games/README.md for how to export from Cocos / Unity.        */
       note:  "Built in my own time — the algorithm work here is the part I'd most like to talk through.",
       art: ["#ffcf3d", "#4dff9e"],
     },

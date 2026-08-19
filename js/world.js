@@ -71,6 +71,7 @@ PF.World = (function () {
       E.push({
         kind: 'cabinet', zone: 'projects', project: i,
         label: p.title,
+        playable: !!(p.play && p.play.type && p.play.type !== 'soon'),
         tx: R[0] + 1.5 + colGap * (col + 0.5),
         ty: rowY[row],
         c1: (p.art && p.art[0]) || '#00e5ff',

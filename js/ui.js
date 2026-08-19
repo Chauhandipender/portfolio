@@ -25,6 +25,23 @@ PF.UI = (function () {
   const list = (arr, cls) => (arr && arr.length)
     ? `<ul class="${cls || ''}">${arr.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : '';
 
+
+  /* ── PLAYABLE BUILD BUTTON ───────────────────────────────────────
+     type "embed" -> plays inside the page in an iframe
+     type "link"  -> host blocks framing, so open a new tab instead
+     type "soon"  -> not hosted yet; say so honestly, don't fake a link */
+  function playHTML(p) {
+    const g = p.play;
+    if (!g) return '';
+    if (g.type === 'soon')
+      return `<p class="playnote">▸ Playable build coming soon${g.note ? ' — ' + esc(g.note) : ''}.</p>`;
+    if (!g.url || isPlaceholder(g.url)) return '';
+    const note = g.note ? `<p class="playnote">${esc(g.note)}</p>` : '';
+    if (g.type === 'link')
+      return `<a class="playbtn" href="${esc(g.url)}" target="_blank" rel="noopener noreferrer">▶ PLAY NOW ↗</a>${note}`;
+    return `<button class="playbtn" type="button" data-play="${esc(g.url)}" data-title="${esc(p.title)}">▶ PLAY IN BROWSER</button>${note}`;
+  }
+
   /* ── PROJECT CARD ────────────────────────────────────────────── */
   function projectCard(p, i) {
     const art = PF.Sprites.cover(p.title + i, (p.art && p.art[0]) || '#00e5ff', (p.art && p.art[1]) || '#b14aff');
@@ -40,6 +57,7 @@ PF.UI = (function () {
             <p class="card__pitch">${esc(p.pitch)}</p>
             ${list(p.bullets, 'card__bullets')}
             <div class="tags">${(p.tags || []).map(tg => `<span class="tag">${esc(tg)}</span>`).join('')}</div>
+            ${playHTML(p)}
             <div class="links">${(p.links || []).map(link).join('')}</div>
             ${p.note ? `<p style="margin:11px 0 0;font-size:12px;opacity:.62">${esc(p.note)}</p>` : ''}
           </div>

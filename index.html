@@ -90,6 +90,24 @@
   </section>
 </div>
 
+
+<!-- ══════════════════════════ PLAYABLE BUILD ══════════════════════════ -->
+<div class="player" id="player" hidden role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+  <header class="player__bar">
+    <h2 class="player__title" id="playerTitle"></h2>
+    <div class="player__acts">
+      <a class="player__btn" id="playerTab" href="#" target="_blank" rel="noopener">OPEN IN TAB ↗</a>
+      <button class="player__btn" id="playerFull">FULLSCREEN</button>
+      <button class="player__btn player__btn--x" id="playerClose" aria-label="Close player">✕</button>
+    </div>
+  </header>
+  <div class="player__stage" id="playerStage">
+    <iframe id="playerFrame" title="Playable build"
+            allow="autoplay; fullscreen; gamepad; accelerometer; gyroscope; xr-spatial-tracking"
+            allowfullscreen></iframe>
+    <p class="player__hint" id="playerHint">Loading build…</p>
+  </div>
+</div>
 <!-- ══════════════════════════ RECRUITER MODE ══════════════════════════ -->
 <div class="doc" id="doc" hidden>
   <div class="doc__wrap" id="docBody"></div>

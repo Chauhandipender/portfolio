@@ -64,11 +64,17 @@ PF.Engine = (function () {
 
   /* The backbuffer aspect must match the element's aspect or the whole
      world stretches. Portrait drives off width (and zooms in, so the
-     character stays readable on a phone); landscape drives off height. */
+     character stays readable on a phone); landscape drives off height.
+
+     Everything below is guarded against a zero-sized canvas: a hidden or
+     not-yet-laid-out element reports 0, and 0/0 is NaN, which used to
+     poison vw -> the camera -> createRadialGradient, killing the render
+     with "provided double value is non-finite". */
   function resize() {
-    const dw = cv.clientWidth || window.innerWidth;
-    const dh = cv.clientHeight || window.innerHeight;
-    const a = dw / dh;
+    const fin = (n, fb) => (Number.isFinite(n) && n > 0) ? n : fb;
+    const dw = fin(cv.clientWidth,  fin(window.innerWidth,  960));
+    const dh = fin(cv.clientHeight, fin(window.innerHeight, 540));
+    const a  = fin(dw / dh, 16 / 9);
 
     if (a < 1) {                              // portrait
       vw = 200;
@@ -77,6 +83,7 @@ PF.Engine = (function () {
       vh = VH;
       vw = Math.min(1040, Math.max(320, Math.round(vh * a)));
     }
+    vw = fin(vw, 412); vh = fin(vh, VH);
     cv.width = vw; cv.height = vh;
     g.imageSmoothingEnabled = false;
   }
@@ -253,6 +260,7 @@ PF.Engine = (function () {
         case 'terminal': PF.Sprites.terminal(g, X, Y, t, act); break;
         case 'pedestal': PF.Sprites.pedestal(g, X, Y, t, act); break;
       }
+      if (e.playable) PF.Sprites.playableTag(g, X + 13, Y - 26, t);
       if (act) {
         g.save();
         g.globalAlpha = .55 + Math.sin(t * 6) * .3;

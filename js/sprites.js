@@ -237,6 +237,19 @@ PF.Sprites = (function () {
     g.globalAlpha = 1;
   }
 
+
+  /* Pulsing play-triangle above a cabinet whose project has a real
+     build behind it, so a recruiter can see what's playable at a glance. */
+  function playableTag(g, x, y, t) {
+    g.save();
+    g.globalAlpha = .55 + Math.sin(t * 3) * .45;
+    g.shadowColor = '#4dff9e'; g.shadowBlur = 10;
+    g.fillStyle = '#4dff9e';
+    g.beginPath();
+    g.moveTo(x - 3, y - 4); g.lineTo(x + 4, y); g.lineTo(x - 3, y + 4);
+    g.closePath(); g.fill();
+    g.restore();
+  }
   /* Small generated cover art for the project cards in the panel. */
   function cover(seedStr, c1, c2) {
     const c = makeCanvas(56, 39), g = c.getContext('2d');
@@ -266,5 +279,5 @@ PF.Sprites = (function () {
     return c;
   }
 
-  return { makeCanvas, buildPlayer, cabinet, forge, archive, terminal, pedestal, cover, glow, PAL };
+  return { makeCanvas, buildPlayer, cabinet, forge, archive, terminal, pedestal, cover, glow, playableTag, PAL };
 })();
