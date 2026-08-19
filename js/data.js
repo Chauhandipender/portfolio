@@ -174,7 +174,7 @@ PF.DATA = {
       ],
       tags:  ["Cocos Creator", "TypeScript", "Algorithms", "Personal project"],
       links: [],
-      play:  { type: "embed", url: "games/emoji-connect/index.html",
+      play:  { type: "embed", url: "https://emoji-match-09.netlify.app/",
                note: "Portrait game — best in a tall window or on a phone." },
       note:  "Built in my own time — the algorithm work here is the part I'd most like to talk through.",
       art: ["#ffcf3d", "#4dff9e"],

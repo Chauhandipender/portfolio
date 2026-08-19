@@ -88,6 +88,20 @@ http (local server, GitHub Pages, Netlify). Not a problem once deployed.
 Re-copying a build over `games/<name>/` overwrites any tweaks made to it.
 Two that are currently applied and worth re-applying:
 
-- `games/emoji-connect/index.html` — `<title>` changed from the default
-  "Cocos Creator | Emoji_Match" to "Emoji Connect Puzzle".
 - `games/waypoint/src/sitelock.js` — same-origin rule (see above).
+
+## Where each build currently lives
+
+| game | hosting | why |
+|---|---|---|
+| Waypoint | in this repo, `games/waypoint/` | small (400 KB) and self-contained |
+| Emoji Connect | Netlify | 12 MB Cocos build — kept out of the repo |
+| Jungle Turret | Netlify | 13 MB Unity WebGL build |
+
+A build hosted elsewhere also plays when previewing from `file://`,
+because it loads from a real https origin. The tradeoff is that the
+cabinet goes dark if that host ever disappears — for a bundled build,
+the game is exactly as available as the portfolio itself.
+
+To bring a hosted game back in-repo, copy its build folder into
+`games/<name>/` and change its `play.url` to `games/<name>/index.html`.
