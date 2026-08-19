@@ -39,17 +39,22 @@
   }
 
   const REGION_NAME = {
-    hub: 'THE HUB', arcade: 'THE ARCADE', forge: 'THE FORGE',
+    hub: 'THE HUB', arcade: 'THE ARCADE', playroom: 'THE PLAYTEST LAB', forge: 'THE FORGE',
     archive: 'THE ARCHIVE', uplink: 'THE UPLINK',
   };
 
   /* ── Panel content router ────────────────────────────────────── */
   function openFor(entity) {
     switch (entity.zone) {
+      case 'playable':
+        markVisited('playable');
+        UI.openPanel(entity.label, UI.oneProjectHTML(entity.project) +
+          `<p style="margin-top:18px;font-size:13px;opacity:.7">Every cabinet in this room has a real build behind it — press <b>PLAY</b> and it runs right here.</p>`);
+        break;
       case 'projects':
         markVisited('projects');
         UI.openPanel(entity.label, UI.oneProjectHTML(entity.project) +
-          `<p style="margin-top:18px;font-size:13px;opacity:.7">Other cabinets in this room hold the rest of my projects — or hit <b>Recruiter Mode</b> to see them all at once.</p>`);
+          `<p style="margin-top:18px;font-size:13px;opacity:.7">Shipped commercially, so the source isn't public. The playable builds are in <b>The Playtest Lab</b>, south of this room.</p>`);
         break;
       case 'skills':  markVisited('skills');  UI.openPanel('SKILL TREE',      UI.skillsHTML());  break;
       case 'about':   markVisited('about');   UI.openPanel('CHARACTER SHEET', UI.aboutHTML());   break;
@@ -73,7 +78,7 @@
   function openMap() {
     const S = 6, cv = PF.Sprites.makeCanvas(W.MW * S, W.MH * S), g = cv.getContext('2d');
     g.fillStyle = '#0b0619'; g.fillRect(0, 0, cv.width, cv.height);
-    const COL = { hub:'#b14aff', arcade:'#00e5ff', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' };
+    const COL = { hub:'#b14aff', arcade:'#00e5ff', playroom:'#ff6b35', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' };
     for (let j = 0; j < W.MH; j++) for (let i = 0; i < W.MW; i++) {
       if (W.isSolid(i, j)) continue;
       const r = W.regionAt(i, j);
@@ -266,7 +271,7 @@
         p.hidden = false;
       },
       region(r) {
-        const z = PF.ZONES.find(z => ({ arcade:'projects', forge:'skills', archive:'about', uplink:'contact' })[r] === z.id);
+        const z = PF.ZONES.find(z => ({ arcade:'projects', playroom:'playable', forge:'skills', archive:'about', uplink:'contact' })[r] === z.id);
         banner(REGION_NAME[r] || r);
         if (z) markVisited(z.id);
       },

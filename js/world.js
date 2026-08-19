@@ -12,17 +12,19 @@ PF.World = (function () {
 
   /* Rooms & corridors, in tiles: [x, y, w, h] ------------------- */
   const ROOMS = {
-    hub:     [24, 15, 13,  8],
-    arcade:  [41,  8, 18, 22],   // big hall — it holds one cabinet per shipped title
-    forge:   [22,  2, 16, 10],
-    archive: [ 2, 12, 16, 14],
-    uplink:  [22, 26, 16, 10],
+    hub:      [24, 15, 13,  8],
+    arcade:   [41,  8, 18, 22],   // shipped titles — one cabinet each
+    playroom: [42, 31, 16,  6],   // playable builds, off the arcade's south side
+    forge:    [22,  2, 16, 10],
+    archive:  [ 2, 12, 16, 14],
+    uplink:   [22, 26, 16, 10],
   };
   const HALLS = [
     [37, 18,  4, 3],   // hub → arcade
     [29, 12,  3, 3],   // hub → forge
     [18, 18,  6, 3],   // hub → archive
     [29, 23,  3, 3],   // hub → uplink
+    [48, 29,  3, 3],   // arcade → playroom
   ];
 
   /* Which room each tile belongs to (for the zone banner) -------- */
@@ -55,30 +57,49 @@ PF.World = (function () {
     const E = [];
     const projects = data.projects || [];
 
-    /* One arcade cabinet per project. The grid is derived from the room
-       rect rather than hard-coded, so adding or removing a project just
-       re-flows the hall instead of pushing a cabinet through a wall. */
-    const R = ROOMS.arcade;
-    const n = projects.length;
-    const rows = n <= 4 ? 1 : 2;
-    const perRow = Math.ceil(n / rows);
-    const colGap = (R[2] - 3) / perRow;
-    const rowY = rows === 1 ? [R[1] + 8] : [R[1] + 5, R[1] + 14];
+    /* A build only counts as playable once it has a real, non-placeholder
+       URL — the same test the PLAY button uses, so the world and the panel
+       can never disagree about what is playable. */
+    const isPlayable = p => !!(p.play && p.play.type && p.play.type !== 'soon'
+                               && p.play.url && !/[⟪⟫]/.test(p.play.url));
 
-    projects.forEach((p, i) => {
-      const row = Math.min(rows - 1, (i / perRow) | 0);
-      const col = i % perRow;
-      E.push({
-        kind: 'cabinet', zone: 'projects', project: i,
-        label: p.title,
-        playable: !!(p.play && p.play.type && p.play.type !== 'soon'
-                     && p.play.url && !/[⟪⟫]/.test(p.play.url)),
-        tx: R[0] + 1.5 + colGap * (col + 0.5),
-        ty: rowY[row],
-        c1: (p.art && p.art[0]) || '#00e5ff',
-        c2: (p.art && p.art[1]) || '#b14aff',
+    /* Cabinets are centred inside whichever room they belong to, so a room
+       never ends up lopsided when a project is added or removed. */
+    function layout(list, room, rows, maxGap) {
+      const n = list.length;
+      if (!n) return;
+      const per = Math.ceil(n / rows);
+      const gap = Math.min(maxGap, (room[2] - 3) / per);
+      const rowYs = rows === 1
+        ? [room[1] + Math.floor(room[3] / 2) + 1]
+        : [room[1] + 5, room[1] + 14];
+
+      list.forEach((it, i) => {
+        const row = Math.min(rows - 1, (i / per) | 0);
+        const col = i % per;
+        const inRow = Math.min(per, n - row * per);
+        const startX = room[0] + (room[2] - gap * inRow) / 2;
+        E.push({
+          kind: 'cabinet', zone: it.zone, project: it.index,
+          label: it.p.title, playable: isPlayable(it.p),
+          tx: startX + gap * (col + 0.5), ty: rowYs[row],
+          c1: (it.p.art && it.p.art[0]) || '#00e5ff',
+          c2: (it.p.art && it.p.art[1]) || '#b14aff',
+        });
       });
+    }
+
+    /* Playable builds get their own room so a recruiter who just wants to
+       press PLAY has one place to go, instead of hunting for the three
+       cabinets with a build behind them among a wall of shipped titles. */
+    const playable = [], shipped = [];
+    projects.forEach((p, index) => {
+      const on = isPlayable(p);
+      (on ? playable : shipped).push({ p, index, zone: on ? 'playable' : 'projects' });
     });
+
+    layout(shipped,  ROOMS.arcade,   2, 4);
+    layout(playable, ROOMS.playroom, 1, 4);
 
     E.push({ kind: 'forge',    zone: 'skills',  label: 'Skill tree',   tx: 30, ty: 7  });
     E.push({ kind: 'archive',  zone: 'about',   label: 'Character sheet', tx: 10, ty: 19 });
@@ -121,7 +142,7 @@ PF.World = (function () {
 
         // scattered lit tiles pulse gently
         if (r > .93) {
-          const c = ({ arcade:'#00e5ff', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' })[reg] || '#b14aff';
+          const c = ({ arcade:'#00e5ff', playroom:'#ff6b35', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' })[reg] || '#b14aff';
           g.save();
           g.globalAlpha = .1 + Math.sin(t * 1.6 + i + j) * .05;
           g.fillStyle = c; g.fillRect(X + 2, Y + 2, TILE - 4, TILE - 4);
@@ -156,7 +177,7 @@ PF.World = (function () {
           g.fillStyle = '#1a1136';
           g.fillRect(X, Y + 4, TILE, TILE - 4);
           const reg = regionAt(i, j + 1);
-          const c = ({ arcade:'#00e5ff', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' })[reg] || '#b14aff';
+          const c = ({ arcade:'#00e5ff', playroom:'#ff6b35', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' })[reg] || '#b14aff';
           g.save();
           g.shadowColor = c; g.shadowBlur = 8;
           g.globalAlpha = .75 + Math.sin(t * 1.1 + i * .4) * .18;
