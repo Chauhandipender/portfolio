@@ -10,21 +10,22 @@ PF.World = (function () {
   const TILE = 16;
   const MW = 60, MH = 38;          // map size in tiles
 
-  /* Rooms & corridors, in tiles: [x, y, w, h] ------------------- */
+  /* The projects hall is the centre of the map and the room you spawn in:
+     a recruiter should land facing the work, not in an empty plaza that
+     has to be explored before anything is found. Everything else — the
+     playable builds, skills, about, contact — radiates off it. */
   const ROOMS = {
-    hub:      [24, 15, 13,  8],
-    arcade:   [41,  8, 18, 22],   // shipped titles — one cabinet each
-    playroom: [42, 31, 16,  6],   // playable builds, off the arcade's south side
-    forge:    [22,  2, 16, 10],
-    archive:  [ 2, 12, 16, 14],
-    uplink:   [22, 26, 16, 10],
+    arcade:   [20, 11, 22, 16],   // CENTRE + spawn. Shipped titles.
+    playroom: [22,  2, 18,  7],   // playable builds, straight north
+    archive:  [ 2, 15, 14, 10],   // west
+    forge:    [46, 15, 12, 10],   // east
+    uplink:   [24, 30, 14,  6],   // south
   };
   const HALLS = [
-    [37, 18,  4, 3],   // hub → arcade
-    [29, 12,  3, 3],   // hub → forge
-    [18, 18,  6, 3],   // hub → archive
-    [29, 23,  3, 3],   // hub → uplink
-    [48, 29,  3, 3],   // arcade → playroom
+    [29,  8,  4, 4],   // arcade → playtest lab (wide, so the lab is visible)
+    [15, 18,  6, 3],   // arcade → archive
+    [41, 18,  6, 3],   // arcade → forge
+    [29, 26,  4, 5],   // arcade → uplink
   ];
 
   /* Which room each tile belongs to (for the zone banner) -------- */
@@ -72,7 +73,7 @@ PF.World = (function () {
       const gap = Math.min(maxGap, (room[2] - 3) / per);
       const rowYs = rows === 1
         ? [room[1] + Math.floor(room[3] / 2) + 1]
-        : [room[1] + 5, room[1] + 14];
+        : [room[1] + Math.round(room[3] * 0.32), room[1] + Math.round(room[3] * 0.70)];
 
       list.forEach((it, i) => {
         const row = Math.min(rows - 1, (i / per) | 0);
@@ -101,10 +102,10 @@ PF.World = (function () {
     layout(shipped,  ROOMS.arcade,   2, 4);
     layout(playable, ROOMS.playroom, 1, 4);
 
-    E.push({ kind: 'forge',    zone: 'skills',  label: 'Skill tree',   tx: 30, ty: 7  });
-    E.push({ kind: 'archive',  zone: 'about',   label: 'Character sheet', tx: 10, ty: 19 });
-    E.push({ kind: 'terminal', zone: 'contact', label: 'Contact uplink', tx: 30, ty: 31 });
-    E.push({ kind: 'pedestal', zone: 'resume',  label: 'Resume',       tx: 30.5, ty: 18 });
+    E.push({ kind: 'forge',    zone: 'skills',  label: 'Skill tree',      tx: 52,   ty: 20 });
+    E.push({ kind: 'archive',  zone: 'about',   label: 'Character sheet', tx: 9,    ty: 20 });
+    E.push({ kind: 'terminal', zone: 'contact', label: 'Contact uplink',  tx: 31,   ty: 34 });
+    E.push({ kind: 'pedestal', zone: 'resume',  label: 'Resume',          tx: 22,   ty: 25 });
 
     E.forEach(e => { e.x = e.tx * TILE; e.y = e.ty * TILE; });
     return E;

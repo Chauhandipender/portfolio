@@ -39,7 +39,7 @@
   }
 
   const REGION_NAME = {
-    hub: 'THE HUB', arcade: 'THE ARCADE', playroom: 'THE PLAYTEST LAB', forge: 'THE FORGE',
+    arcade: 'THE ARCADE', playroom: 'THE PLAYTEST LAB', forge: 'THE FORGE',
     archive: 'THE ARCHIVE', uplink: 'THE UPLINK',
   };
 
@@ -54,7 +54,7 @@
       case 'projects':
         markVisited('projects');
         UI.openPanel(entity.label, UI.oneProjectHTML(entity.project) +
-          `<p style="margin-top:18px;font-size:13px;opacity:.7">Shipped commercially, so the source isn't public. The playable builds are in <b>The Playtest Lab</b>, south of this room.</p>`);
+          `<p style="margin-top:18px;font-size:13px;opacity:.7">Shipped commercially, so the source isn't public. The playable builds are in <b>The Playtest Lab</b>, straight north through the wide doorway.</p>`);
         break;
       case 'skills':  markVisited('skills');  UI.openPanel('SKILL TREE',      UI.skillsHTML());  break;
       case 'about':   markVisited('about');   UI.openPanel('CHARACTER SHEET', UI.aboutHTML());   break;
@@ -78,7 +78,7 @@
   function openMap() {
     const S = 6, cv = PF.Sprites.makeCanvas(W.MW * S, W.MH * S), g = cv.getContext('2d');
     g.fillStyle = '#0b0619'; g.fillRect(0, 0, cv.width, cv.height);
-    const COL = { hub:'#b14aff', arcade:'#00e5ff', playroom:'#ff6b35', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' };
+    const COL = { arcade:'#00e5ff', playroom:'#ff6b35', forge:'#ff2e97', archive:'#ffcf3d', uplink:'#4dff9e' };
     for (let j = 0; j < W.MH; j++) for (let i = 0; i < W.MW; i++) {
       if (W.isSolid(i, j)) continue;
       const r = W.regionAt(i, j);
@@ -277,7 +277,7 @@
       },
     });
     E.start();
-    banner('THE HUB');
+    banner('THE ARCADE');
     setTimeout(() => el('helpHint').classList.add('fade'), 9000);
   }
 
