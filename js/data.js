@@ -15,7 +15,7 @@ PF.DATA = {
     name:      "DIPENDER CHAUHAN",
     handle:    "",
     role:      "Game Developer — Unity 6 & Cocos Creator",
-    tagline:   "Ten titles shipped to Google Play across Cocos Creator and Unity, reaching 1M+ downloads — plus a set of Unity 6 projects you can play right here in the browser: two shooters, a rail shooter with hand-written shaders, and a puzzle game with a solver behind it.",
+    tagline:   "Eleven titles shipped to Google Play across Cocos Creator and Unity, reaching 1M+ downloads — plus a set of Unity 6 projects you can play right here in the browser: two shooters, a rail shooter with hand-written shaders, and a puzzle game with a solver behind it.",
     location:  "Ahmedabad, Gujarat, India",
     relocate:  "Open to relocation",
     available: "Open to new opportunities",
@@ -43,7 +43,7 @@ PF.DATA = {
     { k: "STUDIO",    v: "Mfinity Infotech" },
     { k: "ENGINES",   v: "Unity 6 · Cocos Creator" },
     { k: "LANGUAGES", v: "C# · TypeScript · HLSL" },
-    { k: "SHIPPED",   v: "10 titles on Google Play" },
+    { k: "SHIPPED",   v: "11 titles on Google Play" },
     { k: "REACH",     v: "1M+ combined downloads" },
     { k: "PLAYABLE",  v: "5 builds, in this browser" },
     { k: "EDUCATION", v: "B.Tech CS, 2025" },
@@ -51,7 +51,7 @@ PF.DATA = {
   ],
 
   about: [
-    "I'm a game developer in Ahmedabad. At Mfinity Infotech I've shipped ten titles to Google Play across Cocos Creator and Unity — casual puzzle, physics racing, educational and simulation — reaching a combined 1M+ downloads. Alongside that I build 3D games in Unity 6, and those are the ones you can play in this room.",
+    "I'm a game developer in Ahmedabad. At Mfinity Infotech I've shipped eleven titles to Google Play across Cocos Creator and Unity — casual puzzle, physics racing, educational and simulation — reaching a combined 1M+ downloads. Alongside that I build 3D games in Unity 6, and those are the ones you can play in this room.",
     "The commercial work is where I learned to ship: progression and save systems, IAP and ads integration, JSON-driven level architecture so designers could add content without touching gameplay code, and the performance discipline to keep all of it smooth on low-end Android hardware.",
     "The personal work is where I go deeper. Across three Unity 6 projects I've written first-person weapon handling with live spread and recoil, enemy AI on a wave director, NavMesh pathfinding, destructible vehicles using Voronoi fracturing, and seven URP shaders by hand — including height fog and volumetric light shafts resolved together in a single half-resolution raymarch.",
     "One habit runs through all of it: I generate rather than import. In two of those projects there is not a single imported model, texture, audio clip or material — the terrain, the weapons, the enemies, the UI and every sound effect are produced in C# at runtime.",
@@ -65,7 +65,7 @@ PF.DATA = {
      about anything sitting near the top of a bar.                   */
   skills: [
     { group: "ENGINES", note: "Counts are from the shipped titles and playable builds in this portfolio.", items: [
-      { name: "Cocos Creator", level: 90, note: "9 shipped titles" },
+      { name: "Cocos Creator", level: 90, note: "10 shipped titles" },
       { name: "Unity 6",       level: 85, note: "3 solo projects + 1 shipped title" },
     ]},
     { group: "LANGUAGES", items: [
@@ -256,6 +256,20 @@ PF.DATA = {
       links: [{ label: "GOOGLE PLAY", url: "https://play.google.com/store/apps/details?id=com.fabulousfungames.dreamglow.skincare.asmr" }],
       note:  "Published by Fabulous Fun. Built as in-house work-for-hire, so the source isn't publicly shareable.",
       art: ["#ff9ecb", "#c9a4ff"],
+    },
+    {
+      title:  "Dream Hair Salon",
+      role:   "Game Developer · Mfinity Infotech",
+      engine: "Cocos Creator · TypeScript",
+      pitch:  "A hair-styling salon simulator — cut, colour and style through trendy makeovers, with the tools and looks unlocking as you go.",
+      bullets: [
+        "Built the styling tool set and the makeover flow that carries a client from arrival through to a finished look.",
+        "Shipped with ads integration and unlockable content, on the same offline-first, low-end Android footing as the rest of the catalogue.",
+      ],
+      tags:  ["Cocos Creator", "TypeScript", "Simulation", "Makeover"],
+      links: [{ label: "GOOGLE PLAY", url: "https://play.google.com/store/apps/details?id=com.funworldgames.dreamhairsalon" }],
+      note:  "Published by Fun World Games. Built as in-house work-for-hire, so the source isn't publicly shareable.",
+      art: ["#ff8cc6", "#7a3f9d"],
     },
     {
       title:  "Hexa Arrow Sort: Tap Puzzle",

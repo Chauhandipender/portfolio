@@ -161,7 +161,7 @@ PF.UI = (function () {
       </div>
 
       <h3>THE COMMERCIAL WORK — ${esc(engines(shipped))}</h3>
-      <p>Ten titles that went out to a real audience on a real schedule, which
+      <p>Every one of them went out to a real audience on a real schedule, which
       means each one carried the parts that are easy to skip on a prototype:
       progression and save systems, IAP and ads integration, level unlocking,
       and the performance work to keep it smooth on low-end Android.</p>
