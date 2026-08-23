@@ -49,17 +49,18 @@
       case 'playable':
         markVisited('playable');
         UI.openPanel(entity.label, UI.oneProjectHTML(entity.project) +
-          `<p style="margin-top:18px;font-size:13px;opacity:.7">Every cabinet in this room has a real build behind it — press <b>PLAY</b> and it runs right here.</p>`);
+          `<p style="margin-top:18px;font-size:13px;opacity:.7">Every cabinet in this room has a real build behind it — press <b>PLAY</b> and it runs right here. The ten commercially shipped titles are straight north.</p>`);
         break;
       case 'projects':
         markVisited('projects');
         UI.openPanel(entity.label, UI.oneProjectHTML(entity.project) +
-          `<p style="margin-top:18px;font-size:13px;opacity:.7">Shipped commercially, so the source isn't public. The playable builds are in <b>The Playtest Lab</b>, straight north through the wide doorway.</p>`);
+          `<p style="margin-top:18px;font-size:13px;opacity:.7">Shipped commercially, so the source isn't public. The playable builds are in <b>The Playtest Lab</b>, back south through the wide doorway — those you can play right now.</p>`);
         break;
       case 'skills':  markVisited('skills');  UI.openPanel('SKILL TREE',      UI.skillsHTML());  break;
       case 'about':   markVisited('about');   UI.openPanel('CHARACTER SHEET', UI.aboutHTML());   break;
       case 'contact': markVisited('contact'); UI.openPanel('UPLINK',          UI.contactHTML()); break;
       case 'resume':  markVisited('resume');  UI.openPanel('RESUME',          UI.resumeHTML());  break;
+      case 'record':                          UI.openPanel('SHIPPING RECORD', UI.recordHTML()); break;
     }
     E.setPaused(true);
   }
@@ -277,7 +278,7 @@
       },
     });
     E.start();
-    banner('THE ARCADE');
+    banner('THE PLAYTEST LAB');
     setTimeout(() => el('helpHint').classList.add('fade'), 9000);
   }
 

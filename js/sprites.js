@@ -250,6 +250,40 @@ PF.Sprites = (function () {
     g.closePath(); g.fill();
     g.restore();
   }
+
+  /* Shipping record — a lit display board. Sits beside spawn so the scale
+     of the commercial work registers before the recruiter walks anywhere. */
+  function record(g, x, y, t, active) {
+    const w = 46, h = 26, L = x - w / 2, T = y - h - 6;
+    g.fillStyle = 'rgba(0,0,0,.42)';
+    g.beginPath(); g.ellipse(x, y, 16, 4, 0, 0, 6.284); g.fill();
+
+    g.fillStyle = '#1a1136'; g.fillRect(x - 3, y - 8, 6, 8);        // stand
+    g.fillStyle = '#0e0824'; g.fillRect(L - 1, T - 1, w + 2, h + 2); // frame
+    g.fillStyle = '#12092b'; g.fillRect(L, T, w, h);                 // screen
+
+    glow(g, L + 2, T + 2, w - 4, 3, '#00e5ff', active ? 16 : 8);     // header bar
+
+    // three stat rows, drawn as bars so it reads as data at any zoom
+    const rows = [['#4dff9e', 30], ['#ffcf3d', 38], ['#b14aff', 22]];
+    for (let i = 0; i < rows.length; i++) {
+      const Y = T + 8 + i * 6;
+      g.fillStyle = 'rgba(255,255,255,.10)';
+      g.fillRect(L + 4, Y, w - 8, 4);
+      g.save();
+      g.globalAlpha = active ? 1 : .78;
+      g.shadowColor = rows[i][0]; g.shadowBlur = active ? 8 : 3;
+      g.fillStyle = rows[i][0];
+      const grow = Math.min(1, Math.max(0, (t * 0.6 + i * 0.25) % 3));
+      g.fillRect(L + 4, Y, Math.round(rows[i][1] * Math.min(1, grow * 1.6)), 4);
+      g.restore();
+    }
+    if (active) {
+      g.save(); g.globalAlpha = .16 + Math.sin(t * 5) * .06;
+      g.fillStyle = '#00e5ff'; g.fillRect(L - 5, T - 5, w + 10, h + 10);
+      g.restore();
+    }
+  }
   /* Small generated cover art for the project cards in the panel. */
   function cover(seedStr, c1, c2) {
     const c = makeCanvas(56, 39), g = c.getContext('2d');
@@ -279,5 +313,5 @@ PF.Sprites = (function () {
     return c;
   }
 
-  return { makeCanvas, buildPlayer, cabinet, forge, archive, terminal, pedestal, cover, glow, playableTag, PAL };
+  return { makeCanvas, buildPlayer, cabinet, forge, archive, terminal, pedestal, record, cover, glow, playableTag, PAL };
 })();

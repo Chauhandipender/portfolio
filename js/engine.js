@@ -259,6 +259,7 @@ PF.Engine = (function () {
         case 'archive':  PF.Sprites.archive(g, X, Y, t, act); break;
         case 'terminal': PF.Sprites.terminal(g, X, Y, t, act); break;
         case 'pedestal': PF.Sprites.pedestal(g, X, Y, t, act); break;
+        case 'record':   PF.Sprites.record(g, X, Y, t, act); break;
       }
       if (e.playable) PF.Sprites.playableTag(g, X + 13, Y - 26, t);
       if (act) {

@@ -131,6 +131,55 @@ PF.UI = (function () {
       </p>`;
   }
 
+
+  /* ── SHIPPING RECORD ─────────────────────────────────────────────
+     The aggregate view of the commercial work. Sits beside spawn so the
+     scale reads before a recruiter forms an impression from ten kids'
+     game titles. Counts are derived, never hard-coded, so they cannot
+     drift out of date when a project is added or removed. */
+  function recordHTML() {
+    const shipped = (D.projects || []).filter(p => !/personal/i.test(p.role || ''));
+    const engines = {};
+    shipped.forEach(p => { const e = String(p.engine).split('·')[0].trim(); engines[e] = (engines[e] || 0) + 1; });
+    const engineLine = Object.keys(engines).map(k => `${esc(k)} ×${engines[k]}`).join(' · ');
+
+    const stat = (k, v) => `<div class="stat"><div class="stat__k">${esc(k)}</div><div class="stat__v">${esc(v)}</div></div>`;
+
+    return `
+      <div class="stats">
+        ${stat('TITLES SHIPPED', shipped.length + ' on Google Play')}
+        ${stat('COMBINED REACH', '1M+ downloads')}
+        ${stat('ENGINES', engineLine)}
+        ${stat('PLATFORM', 'Android, offline-first')}
+      </div>
+      <h3>WHAT SHIPPING THAT MANY TAUGHT ME</h3>
+      <p>Every title below went out to a real audience on a real schedule, which
+      means each one carried the parts that are easy to skip on a prototype:
+      progression and save systems, IAP and ads integration, level unlocking,
+      and performance work to keep it smooth on low-end Android.</p>
+      <p>The architecture is what made that pace possible. Levels and content are
+      driven by JSON configuration rather than hard-coded scenes, so new stages
+      and activities could be added without touching gameplay code.</p>
+      <h3>SYSTEMS BUILT ACROSS THESE TITLES</h3>
+      <div class="tags">
+        ${['2D vehicle physics — suspension, collision, terrain',
+           'Data-driven JSON level loading',
+           'Progression & save systems',
+           'IAP & ads SDK integration',
+           'Hint & assist systems',
+           'Path validation & puzzle logic',
+           'Modular mini-game architecture',
+           'Spine, particles & tween animation',
+           'Low-end device optimisation',
+           'Voice-instruction & no-read UX',
+          ].map(t => `<span class="tag">${esc(t)}</span>`).join('')}
+      </div>
+      <p style="margin-top:16px;font-size:13px;opacity:.75">
+        All ${shipped.length} titles are in <b>The Arcade</b>, straight north of here.
+        They are children's and casual games — that was the studio's market, not the
+        limit of the engineering.
+      </p>`;
+  }
   /* ── RECRUITER MODE (the full plain-text version) ────────────── */
   function docHTML() {
     const p = D.profile;
@@ -242,7 +291,7 @@ PF.UI = (function () {
 
   return {
     esc, isPlaceholder, link,
-    projectsHTML, oneProjectHTML, skillsHTML, aboutHTML, contactHTML, resumeHTML, docHTML,
+    projectsHTML, oneProjectHTML, skillsHTML, aboutHTML, contactHTML, resumeHTML, recordHTML, docHTML,
     openPanel, closePanel, isPanelOpen, runBoot, animateBars,
   };
 })();
