@@ -30,7 +30,7 @@ PF.DATA = {
 
   /* ── 2. LINKS ──────────────────────────────────────────────────── */
   links: [
-    { label: "LINKEDIN", url: "https://www.linkedin.com/in/dipender-chauhan-7311812aa/" },
+    { label: "LINKEDIN", url: "https://www.linkedin.com/in/dipender-chauhan/" },
     /* If you have a public Google Play developer page, add it here — I left
        it out rather than guess the URL and ship a 404 to a recruiter:
        { label: "GOOGLE PLAY", url: "https://play.google.com/store/apps/dev?id=..." },
