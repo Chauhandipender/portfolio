@@ -65,8 +65,8 @@ PF.DATA = {
      about anything sitting near the top of a bar.                   */
   skills: [
     { group: "ENGINES", note: "Counts are from the shipped titles and playable builds in this portfolio.", items: [
-      { name: "Cocos Creator", level: 90, note: "10 shipped titles" },
-      { name: "Unity 6",       level: 85, note: "3 solo projects + 1 shipped title" },
+      { name: "Cocos Creator", level: 90, note: "9 shipped titles" },
+      { name: "Unity",         level: 85, note: "3 solo projects on Unity 6, + 2 shipped titles" },
     ]},
     { group: "LANGUAGES", items: [
       { name: "C#",              level: 85, note: "Unity gameplay, systems and tooling" },
@@ -260,16 +260,18 @@ PF.DATA = {
     {
       title:  "Dream Hair Salon",
       role:   "Game Developer · Mfinity Infotech",
-      engine: "Cocos Creator · TypeScript",
-      pitch:  "A hair-styling salon simulator — cut, colour and style through trendy makeovers, with the tools and looks unlocking as you go.",
+      engine: "Unity · C#",
+      pitch:  "A hair-salon makeover sim: clients arrive, and you take each one through a wash, cut, colour and style, then finish with makeup, nails and an outfit.",
       bullets: [
-        "Built the styling tool set and the makeover flow that carries a client from arrival through to a finished look.",
-        "Shipped with ads integration and unlockable content, on the same offline-first, low-end Android footing as the rest of the catalogue.",
+        "Built the multi-stage client flow — wash, cut, colour, style, then the makeup, nail and dress-up finishers — as ordered stages sharing one state model, so a client can't reach styling before the cut is done.",
+        "Implemented the tool interaction model: each implement has its own drag behaviour, target areas and completion condition, rather than one generic tap handler behind different icons.",
+        "Wired level progression to unlockable tools, colours and outfits, so the styling options widen as the player advances.",
+        "Shipped with ads integration on the same offline-first, low-end Android footing as the rest of the catalogue.",
       ],
-      tags:  ["Cocos Creator", "TypeScript", "Simulation", "Makeover"],
+      tags:  ["Unity", "C#", "Simulation", "Multi-stage flow", "Progression"],
       links: [{ label: "GOOGLE PLAY", url: "https://play.google.com/store/apps/details?id=com.funworldgames.dreamhairsalon" }],
       note:  "Published by Fun World Games. Built as in-house work-for-hire, so the source isn't publicly shareable.",
-      art: ["#ff8cc6", "#7a3f9d"],
+      art: ["#ff6bb5", "#3d2a6b"],
     },
     {
       title:  "Hexa Arrow Sort: Tap Puzzle",
