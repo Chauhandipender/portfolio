@@ -98,6 +98,25 @@ PF.DATA = {
      reaches first, so the strongest work leads.                     */
   projects: [
     {
+      title:  "Snowfield — FPP Zombie Shooter",
+      role:   "Solo developer · personal project",
+      engine: "Unity 6 · C# · URP",
+      pitch:  "First-person zombie survival in a snowy conifer forest at dawn. Two weapons, endless waves, no menus — you load in and start shooting.",
+      bullets: [
+        "Built two weapons that genuinely feel different: a 600 RPM full-auto rifle with a 30-round magazine, and a pump shotgun throwing 9 pellets a shell that reloads shell by shell.",
+        "Aiming down sights zooms in, tightens the spread cone, steadies the weapon and slows you down — and the crosshair gap tracks the live spread value, so you can read your own accuracy while you shoot.",
+        "Wave spawner with a 25-zombie concurrent cap, NavMesh pathfinding, and a minimap plotting every active enemy.",
+        "Generated the entire scene in C# at runtime — terrain, conifers, sky, snowfall, both weapons, the zombies, the UI and every single sound effect. There is not one imported model, texture, audio clip, prefab or material in the project.",
+        "Spent the polish budget on game feel: weapon sway, muzzle flash, pooled tracers, impact effects, hitmarkers and a damage vignette.",
+      ],
+      tags:  ["Unity 6", "C#", "URP", "FPS", "NavMesh", "Procedural generation"],
+      links: [],
+      play:  { type: "embed", url: "https://zombie-shooter-fpp.netlify.app/",
+               note: "Unity WebGL, ~15 MB — click the window to capture the mouse. WASD move, mouse aim, right click to aim down sights, 1/2 swap weapons." },
+      note:  "Personal project — playable in the browser above.",
+      art: ["#9fe8ff", "#33607a"],
+    },
+    {
       title:  "Jungle Road Turret Shooter",
       role:   "Solo developer · personal project",
       engine: "Unity 6 · C# · URP",

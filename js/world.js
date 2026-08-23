@@ -194,6 +194,6 @@ PF.World = (function () {
   return {
     TILE, MW, MH, ROOMS,
     isSolid, isFace, regionAt, buildEntities, drawFloor, drawWalls,
-    spawn: { x: 31 * TILE, y: 22 * TILE },
+    spawn: { x: 29 * TILE, y: 22 * TILE },
   };
 })();
