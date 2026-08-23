@@ -14,8 +14,8 @@ PF.DATA = {
   profile: {
     name:      "DIPENDER CHAUHAN",
     handle:    "",
-    role:      "Game Developer — Unity & Cocos Creator",
-    tagline:   "Mobile game developer with 10 titles live on Google Play across Unity and Cocos Creator — casual puzzle, physics racing, educational and simulation — reaching a combined 1M+ downloads.",
+    role:      "Game Developer — Unity 6 & Cocos Creator",
+    tagline:   "Ten titles shipped to Google Play across Cocos Creator and Unity, reaching 1M+ downloads — plus a set of Unity 6 projects you can play right here in the browser: two shooters, a rail shooter with hand-written shaders, and a puzzle game with a solver behind it.",
     location:  "Ahmedabad, Gujarat, India",
     relocate:  "Open to relocation",
     available: "Open to new opportunities",
@@ -41,55 +41,63 @@ PF.DATA = {
   stats: [
     { k: "CLASS",     v: "Game Developer" },
     { k: "STUDIO",    v: "Mfinity Infotech" },
-    { k: "ENGINES",   v: "Cocos Creator · Unity" },
-    { k: "LANGUAGES", v: "TypeScript · C# · JavaScript" },
+    { k: "ENGINES",   v: "Unity 6 · Cocos Creator" },
+    { k: "LANGUAGES", v: "C# · TypeScript · HLSL" },
     { k: "SHIPPED",   v: "10 titles on Google Play" },
     { k: "REACH",     v: "1M+ combined downloads" },
+    { k: "PLAYABLE",  v: "5 builds, in this browser" },
     { k: "EDUCATION", v: "B.Tech CS, 2025" },
     { k: "BASE",      v: "Ahmedabad, Gujarat, IN" },
   ],
 
   about: [
-    "I'm a mobile game developer at Mfinity Infotech in Ahmedabad. Ten titles I've worked on are live on Google Play across Unity and Cocos Creator — casual puzzle, physics racing, educational, hidden-object and simulation — reaching a combined 1M+ downloads.",
-    "Day to day I build gameplay systems, UI flows, progression and save systems in TypeScript and C#. I lean on data-driven architecture — JSON-configured levels and content, so new scenes and levels can be added without touching gameplay code — and I've built the commercial layer too: IAP, ads SDK integration, level unlocking and save-data management.",
-    "The work I enjoy most is the physics. For a Hill Climb Racing-style racer I wrote vehicle movement, acceleration and braking, suspension behaviour, collision detection, procedural terrain interaction and a camera-follow rig, then tuned the whole simulation to stay smooth on low-end Android hardware.",
-    "I graduated B.Tech Computer Science from Ahmedabad Institute of Technology in 2025. I'm based in Ahmedabad and open to relocating.",
+    "I'm a game developer in Ahmedabad. At Mfinity Infotech I've shipped ten titles to Google Play across Cocos Creator and Unity — casual puzzle, physics racing, educational and simulation — reaching a combined 1M+ downloads. Alongside that I build 3D games in Unity 6, and those are the ones you can play in this room.",
+    "The commercial work is where I learned to ship: progression and save systems, IAP and ads integration, JSON-driven level architecture so designers could add content without touching gameplay code, and the performance discipline to keep all of it smooth on low-end Android hardware.",
+    "The personal work is where I go deeper. Across three Unity 6 projects I've written first-person weapon handling with live spread and recoil, enemy AI on a wave director, NavMesh pathfinding, destructible vehicles using Voronoi fracturing, and seven URP shaders by hand — including height fog and volumetric light shafts resolved together in a single half-resolution raymarch.",
+    "One habit runs through all of it: I generate rather than import. In two of those projects there is not a single imported model, texture, audio clip or material — the terrain, the weapons, the enemies, the UI and every sound effect are produced in C# at runtime.",
+    "B.Tech Computer Science from Ahmedabad Institute of Technology, 2025. Based in Ahmedabad, open to relocating, and looking for roles where I can keep pushing on gameplay and graphics systems.",
   ],
 
   /* ── 4. SKILL TREE ─────────────────────────────────────────────
-     ⚠ THE NUMBERS BELOW ARE AN ESTIMATE FROM YOUR CV — REVIEW THEM.
+     ⚠ THE NUMBERS BELOW ARE MY ESTIMATE, from your CV and from reading
+     the four Unity/HTML5 projects. REVIEW THEM BEFORE ANYONE ELSE DOES.
      Only you know your true proficiency, and a recruiter will ask
      about anything sitting near the top of a bar.                   */
   skills: [
-    { group: "ENGINES", note: "Shipped counts are from the ten live titles below.", items: [
+    { group: "ENGINES", note: "Counts are from the shipped titles and playable builds in this portfolio.", items: [
       { name: "Cocos Creator", level: 90, note: "9 shipped titles" },
-      { name: "Unity",         level: 65, note: "1 shipped title" },
+      { name: "Unity 6",       level: 85, note: "3 solo projects + 1 shipped title" },
     ]},
     { group: "LANGUAGES", items: [
-      { name: "TypeScript", level: 88, note: "primary language for Cocos work" },
-      { name: "JavaScript", level: 75 },
-      { name: "C#",         level: 70, note: "Unity gameplay & UI" },
-      { name: "HTML / CSS", level: 55 },
+      { name: "C#",              level: 85, note: "Unity gameplay, systems and tooling" },
+      { name: "TypeScript",      level: 88, note: "9 shipped Cocos titles" },
+      { name: "JavaScript",      level: 78 },
+      { name: "HLSL / ShaderLab",level: 62, note: "7 hand-written URP shaders" },
+    ]},
+    { group: "GRAPHICS & RENDERING", note: "Mostly from the Unity 6 work you can play in this room.", items: [
+      { name: "Procedural mesh, texture & audio generation", level: 85, note: "whole scenes built in C# at runtime" },
+      { name: "URP shader authoring",           level: 65 },
+      { name: "Post-processing & game feel",    level: 75 },
+      { name: "Volumetric lighting & raymarching", level: 55, note: "height fog + light shafts in one half-res pass" },
     ]},
     { group: "GAMEPLAY SYSTEMS", items: [
-      { name: "Gameplay & UI flow systems",   level: 88 },
-      { name: "Progression & save systems",   level: 85 },
-      { name: "Data-driven JSON level config",level: 80 },
-      { name: "2D physics — vehicles, collision, suspension, terrain", level: 78 },
-      { name: "Puzzle logic & path validation", level: 75 },
-      { name: "Hint & assist systems",        level: 72 },
-    ]},
-    { group: "ART & FEEL", items: [
-      { name: "Particles & tween animation",  level: 75 },
-      { name: "Spine animation",              level: 70 },
-      { name: "Materials, textures, shader effects", level: 60 },
+      { name: "Progression & save systems",     level: 85 },
+      { name: "Data-driven JSON level config",  level: 80 },
+      { name: "FPS weapon handling — spread, recoil, ADS", level: 78 },
+      { name: "2D physics — vehicles, suspension, terrain", level: 78 },
+      { name: "Enemy AI, wave direction & telegraphs", level: 75 },
+      { name: "Puzzle logic, solvers & path validation", level: 75 },
+      { name: "NavMesh pathfinding",            level: 70 },
     ]},
     { group: "SHIPPING & TOOLS", items: [
-      { name: "Git / GitHub",                 level: 85 },
-      { name: "Ads SDK & IAP integration",    level: 80 },
-      { name: "Low-end device optimisation",  level: 78 },
-      { name: "Android Studio",               level: 70 },
-      { name: "Jira",                         level: 65 },
+      { name: "Git / GitHub",                   level: 85 },
+      { name: "Ads SDK & IAP integration",      level: 80 },
+      { name: "WebGL build & deployment",       level: 78 },
+      { name: "Low-end device optimisation",    level: 78 },
+      { name: "Editor tooling & scene generators", level: 72 },
+      { name: "Spine, particles & tween animation", level: 72 },
+      { name: "Android Studio",                 level: 70 },
+      { name: "Jira",                           level: 65 },
     ]},
   ],
 
