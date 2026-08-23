@@ -106,7 +106,7 @@ PF.World = (function () {
     E.push({ kind: 'archive',  zone: 'about',   label: 'Character sheet', tx: 9,    ty: 21 });
     E.push({ kind: 'terminal', zone: 'contact', label: 'Contact uplink',  tx: 31,   ty: 33 });
     E.push({ kind: 'pedestal', zone: 'resume',  label: 'Resume',          tx: 24,   ty: 25 });
-    E.push({ kind: 'record',   zone: 'record',  label: 'Shipping record', tx: 31,   ty: 25 });
+    E.push({ kind: 'record',   zone: 'record',  label: 'Track record',    tx: 31,   ty: 25 });
 
     E.forEach(e => { e.x = e.tx * TILE; e.y = e.ty * TILE; });
     return E;

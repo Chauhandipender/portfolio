@@ -60,7 +60,7 @@
       case 'about':   markVisited('about');   UI.openPanel('CHARACTER SHEET', UI.aboutHTML());   break;
       case 'contact': markVisited('contact'); UI.openPanel('UPLINK',          UI.contactHTML()); break;
       case 'resume':  markVisited('resume');  UI.openPanel('RESUME',          UI.resumeHTML());  break;
-      case 'record':                          UI.openPanel('SHIPPING RECORD', UI.recordHTML()); break;
+      case 'record':                          UI.openPanel('TRACK RECORD', UI.recordHTML()); break;
     }
     E.setPaused(true);
   }

@@ -132,52 +132,70 @@ PF.UI = (function () {
   }
 
 
-  /* ── SHIPPING RECORD ─────────────────────────────────────────────
-     The aggregate view of the commercial work. Sits beside spawn so the
-     scale reads before a recruiter forms an impression from ten kids'
-     game titles. Counts are derived, never hard-coded, so they cannot
-     drift out of date when a project is added or removed. */
+  /* ── TRACK RECORD ────────────────────────────────────────────────
+     The board beside spawn. It has to carry BOTH halves of the work:
+     the commercial shipping record, and the solo engine-level projects
+     standing in the same room. Every count is derived from the projects
+     array, so none of it can drift when a project is added or removed. */
   function recordHTML() {
-    const shipped = (D.projects || []).filter(p => !/personal/i.test(p.role || ''));
-    const engines = {};
-    shipped.forEach(p => { const e = String(p.engine).split('·')[0].trim(); engines[e] = (engines[e] || 0) + 1; });
-    const engineLine = Object.keys(engines).map(k => `${esc(k)} ×${engines[k]}`).join(' · ');
+    const all      = D.projects || [];
+    const personal = all.filter(p => /personal|solo/i.test(p.role || ''));
+    const shipped  = all.filter(p => !/personal|solo/i.test(p.role || ''));
+    const playable = all.filter(p => p.play && p.play.type && p.play.type !== 'soon'
+                                     && p.play.url && !isPlaceholder(p.play.url));
 
-    const stat = (k, v) => `<div class="stat"><div class="stat__k">${esc(k)}</div><div class="stat__v">${esc(v)}</div></div>`;
+    const engines = list => {
+      const c = {};
+      list.forEach(p => { const e = String(p.engine).split('·')[0].trim(); c[e] = (c[e] || 0) + 1; });
+      return Object.keys(c).sort((a, b) => c[b] - c[a]).map(k => `${esc(k)} ×${c[k]}`).join(' · ');
+    };
+    const stat = (k, v) => `<div class="stat"><div class="stat__k">${esc(k)}</div><div class="stat__v">${v}</div></div>`;
+    const tags = arr => `<div class="tags">${arr.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>`;
 
     return `
       <div class="stats">
-        ${stat('TITLES SHIPPED', shipped.length + ' on Google Play')}
-        ${stat('COMBINED REACH', '1M+ downloads')}
-        ${stat('ENGINES', engineLine)}
-        ${stat('PLATFORM', 'Android, offline-first')}
+        ${stat('SHIPPED',       shipped.length + ' titles on Google Play')}
+        ${stat('COMBINED REACH','1M+ downloads')}
+        ${stat('SOLO PROJECTS', personal.length + ' built end to end')}
+        ${stat('PLAYABLE HERE', playable.length + ' builds, in this browser')}
       </div>
-      <h3>WHAT SHIPPING THAT MANY TAUGHT ME</h3>
-      <p>Every title below went out to a real audience on a real schedule, which
+
+      <h3>THE COMMERCIAL WORK — ${esc(engines(shipped))}</h3>
+      <p>Ten titles that went out to a real audience on a real schedule, which
       means each one carried the parts that are easy to skip on a prototype:
       progression and save systems, IAP and ads integration, level unlocking,
-      and performance work to keep it smooth on low-end Android.</p>
-      <p>The architecture is what made that pace possible. Levels and content are
+      and the performance work to keep it smooth on low-end Android.</p>
+      <p>The architecture is what made that pace possible — levels and content
       driven by JSON configuration rather than hard-coded scenes, so new stages
       and activities could be added without touching gameplay code.</p>
-      <h3>SYSTEMS BUILT ACROSS THESE TITLES</h3>
-      <div class="tags">
-        ${['2D vehicle physics — suspension, collision, terrain',
-           'Data-driven JSON level loading',
-           'Progression & save systems',
-           'IAP & ads SDK integration',
-           'Hint & assist systems',
-           'Path validation & puzzle logic',
-           'Modular mini-game architecture',
-           'Spine, particles & tween animation',
-           'Low-end device optimisation',
-           'Voice-instruction & no-read UX',
-          ].map(t => `<span class="tag">${esc(t)}</span>`).join('')}
-      </div>
-      <p style="margin-top:16px;font-size:13px;opacity:.75">
-        All ${shipped.length} titles are in <b>The Arcade</b>, straight north of here.
-        They are children's and casual games — that was the studio's market, not the
-        limit of the engineering.
+      ${tags(['Data-driven JSON level loading',
+              'Progression & save systems',
+              'IAP & ads SDK integration',
+              '2D vehicle physics — suspension, collision, terrain',
+              'Modular mini-game architecture',
+              'Hint & assist systems',
+              'Spine, particles & tween animation',
+              'Low-end device optimisation',
+              'Voice-instruction & no-read UX'])}
+
+      <h3>THE SOLO WORK — ${esc(engines(personal))}</h3>
+      <p>This is where I go deeper than a commercial brief allows: engine-level
+      systems, rendering, and AI, built end to end without an art pipeline. The
+      cabinets in this room are all of it, running in your browser.</p>
+      ${tags(['Hand-written URP shaders',
+              'Volumetric lighting & raymarched fog',
+              'Procedural mesh, texture & audio generation',
+              'FPS weapon handling — spread, recoil, ADS',
+              'Enemy AI, wave direction & telegraphs',
+              'NavMesh pathfinding',
+              'Voronoi destruction',
+              'Streaming world & vegetation scatter',
+              'Puzzle solvers & path validation'])}
+
+      <p style="margin-top:18px;font-size:13px;opacity:.75">
+        The ${shipped.length} shipped titles are in <b>The Arcade</b>, straight north.
+        They are children's and casual games — that was the studio's market, not
+        the limit of the engineering.
       </p>`;
   }
   /* ── RECRUITER MODE (the full plain-text version) ────────────── */
